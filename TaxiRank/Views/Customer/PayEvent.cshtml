@@ -1,0 +1,66 @@
+﻿@model TaxiRank.Models.ViewModels.EventPaymentVM
+@{
+    ViewBag.Title = "Pay for Event";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-3">
+    <h3>Event Quote</h3>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h4>Quote Amount: <strong>@Model.Amount.ToString("C") ZAR</strong></h4>
+            <p>Your event request has been approved with a quote. You can now proceed with the payment or decline the quote if you are no longer interested.</p>
+            <hr />
+
+            <div class="d-flex gap-2">
+                <a href="#payment-section" class="btn btn-primary" onclick="showPaymentForm()">Continue to Payment</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-section" style="display:none;">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h3>Pay ZAR @Model.Amount.ToString("0.00")</h3>
+                <div id="payment-element"></div>
+                <button id="paybtn" class="btn btn-primary mt-3">Pay</button>
+                <div id="msg" class="mt-2 small text-muted"></div>
+                @using (Html.BeginForm("PayEventConfirm", "Customer", FormMethod.Post, new { id = "confirmForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", Model.CharterId)
+                    @Html.Hidden("paymentIntentId", "", new { id = "pi" })
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe("@Model.StripePublishableKey");
+    var elements = null;
+
+    function showPaymentForm() {
+        document.getElementById('payment-section').style.display = 'block';
+
+        if (!elements) {
+            elements = stripe.elements({ clientSecret: "@Model.ClientSecret" });
+            var paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+
+            // Attach event listener to pay button only once
+            document.getElementById('paybtn').addEventListener('click', async function () {
+                document.getElementById('msg').innerText = 'Processing...';
+                const { error, paymentIntent } = await stripe.confirmPayment({ elements, redirect: 'if_required' });
+                if (error) { document.getElementById('msg').innerText = error.message || 'Payment error'; return; }
+                if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    document.getElementById('pi').value = paymentIntent.id;
+                    document.getElementById('confirmForm').submit();
+                } else {
+                    document.getElementById('msg').innerText = 'Payment not completed';
+                }
+            });
+        }
+    }
+</script>

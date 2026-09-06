@@ -1,0 +1,189 @@
+﻿@model TaxiRank.Models.ViewModels.TelemetryListVM
+@{
+    ViewBag.Title = "Telemetry Trail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var pts = Model.Points.Select(p => new
+    {
+        lat = (double)p.Latitude,
+        lng = (double)p.Longitude,
+        t = p.Timestamp.ToString("HH:mm:ss"),
+        s = p.SpeedKph,
+        b = p.Battery
+    }).ToList();
+
+    string DestLatJs = ViewBag.DestLat == null ? "null"
+        : ((double)ViewBag.DestLat).ToString(System.Globalization.CultureInfo.InvariantCulture);
+    string DestLngJs = ViewBag.DestLng == null ? "null"
+        : ((double)ViewBag.DestLng).ToString(System.Globalization.CultureInfo.InvariantCulture);
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Telemetry — Departure #@Model.DepartureId</h3>
+        <img src="~/Content/images/minibus.jpg" class="rounded" style="height:48px" alt="Map" />
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Live Map</strong></div>
+                <div id="map" style="height:480px;width:100%"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Status</strong></div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label">Lat</label>
+                            <input id="stat-lat" class="form-control" readonly />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Lng</label>
+                            <input id="stat-lng" class="form-control" readonly />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Speed (kph)</label>
+                            <input id="stat-speed" class="form-control" readonly />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Battery</label>
+                            <input id="stat-batt" class="form-control" readonly />
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="small text-muted">
+                                Destination:
+                                <span id="dest-text"></span>
+                                <div id="route-summary" class="mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Points</strong></div>
+                <div class="table-responsive" style="max-height:420px">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light">
+                            <tr><th>Time</th><th>Lat</th><th>Lng</th><th>Speed</th></tr>
+                        </thead>
+                        <tbody id="points-body">
+                            @foreach (var p in Model.Points)
+                            {
+                                <tr>
+                                    <td>@p.Timestamp.ToString("HH:mm:ss")</td>
+                                    <td>@p.Latitude</td>
+                                    <td>@p.Longitude</td>
+                                    <td>@(p.SpeedKph.HasValue ? p.SpeedKph.Value.ToString("0") : "-")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var initialPoints = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(pts));
+    var departureId = @Model.DepartureId;
+    var DEST = { lat: @Html.Raw(DestLatJs), lng: @Html.Raw(DestLngJs) };
+
+    var map, polyline, liveMarker, bounds, dirSvc, dirRenderer;
+
+    function initMap() {
+        var center = initialPoints.length ? { lat: initialPoints[0].lat, lng: initialPoints[0].lng } : { lat: -28.5, lng: 24.7 };
+        map = new google.maps.Map(document.getElementById('map'), { zoom: initialPoints.length ? 12 : 5, center: center, mapTypeId: 'roadmap' });
+
+        dirSvc = new google.maps.DirectionsService();
+        dirRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: false, preserveViewport: true });
+        dirRenderer.setMap(map);
+
+        polyline = new google.maps.Polyline({ path: [], map: map });
+        bounds = new google.maps.LatLngBounds();
+
+        if (initialPoints.length) {
+            initialPoints.forEach(function (p, i) {
+                var pos = new google.maps.LatLng(p.lat, p.lng);
+                polyline.getPath().push(pos);
+                bounds.extend(pos);
+                if (i === 0 || i === initialPoints.length - 1) {
+                    new google.maps.Marker({ map: map, position: pos, label: i === 0 ? 'S' : 'E' });
+                }
+            });
+            if (!bounds.isEmpty()) map.fitBounds(bounds);
+            var last = initialPoints[initialPoints.length - 1];
+            updateStatus(last.lat, last.lng, last.s, last.b);
+        }
+
+        var destText = document.getElementById('dest-text');
+        if (DEST.lat != null && DEST.lng != null) {
+            destText.textContent = DEST.lat.toFixed(6) + ", " + DEST.lng.toFixed(6);
+        } else {
+            destText.textContent = "(not set)";
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(function (pos) {
+                var lat = pos.coords.latitude;
+                var lng = pos.coords.longitude;
+                var spd = pos.coords.speed != null ? Math.max(0, pos.coords.speed * 3.6) : null;
+                var ll = new google.maps.LatLng(lat, lng);
+
+                if (!liveMarker) {
+                    liveMarker = new google.maps.Marker({ map: map, position: ll, label: 'D' });
+                } else {
+                    liveMarker.setPosition(ll);
+                }
+
+                polyline.getPath().push(ll);
+                bounds.extend(ll);
+                if (!bounds.isEmpty()) map.fitBounds(bounds);
+                updateStatus(lat, lng, spd, null);
+
+                if (DEST.lat != null && DEST.lng != null) {
+                    dirSvc.route({
+                        origin: ll,
+                        destination: new google.maps.LatLng(DEST.lat, DEST.lng),
+                        travelMode: google.maps.TravelMode.DRIVING
+                    }, function (res, status) {
+                        if (status === google.maps.DirectionsStatus.OK) {
+                            dirRenderer.setDirections(res);
+                            var leg = res.routes[0].legs[0];
+                            document.getElementById('route-summary').innerHTML =
+                                'Distance: ' + leg.distance.text + ' • ETA: ' + leg.duration.text;
+                        }
+                    });
+                }
+
+                fetch('@Url.Action("TelemetryUpdate","Driver")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ departureId: departureId, lat: lat, lng: lng, speedKph: spd, battery: null })
+                }).catch(function(){});
+            }, function (err) {
+                console.warn('geolocation error', err);
+            }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 });
+        }
+    }
+
+    function updateStatus(lat, lng, speed, batt) {
+        document.getElementById('stat-lat').value = lat != null ? lat.toFixed(6) : '';
+        document.getElementById('stat-lng').value = lng != null ? lng.toFixed(6) : '';
+        document.getElementById('stat-speed').value = speed != null ? speed.toFixed(0) : '';
+        document.getElementById('stat-batt').value = batt != null ? batt : '';
+        var tbody = document.getElementById('points-body');
+        var tr = document.createElement('tr');
+        var now = new Date();
+        var hh = now.getHours().toString().padStart(2, '0');
+        var mm = now.getMinutes().toString().padStart(2, '0');
+        var ss = now.getSeconds().toString().padStart(2, '0');
+        tr.innerHTML = '<td>' + hh + ':' + mm + ':' + ss + '</td><td>' + lat.toFixed(6) + '</td><td>' + lng.toFixed(6) + '</td><td>' + (speed != null ? speed.toFixed(0) : '-') + '</td>';
+        tbody.prepend(tr);
+    }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&callback=initMap"></script>

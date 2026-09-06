@@ -1,0 +1,21 @@
+﻿@model TaxiRank.Models.ViewModels.MapsSearchVM
+@{
+    ViewBag.Title = "Maps Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Maps Search</h3>
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-9"><input name="q" class="form-control" placeholder="Search places..." value="@Model.Query" /></div>
+        <div class="col-md-3"><button class="btn btn-outline-secondary w-100">Search</button></div>
+    </form>
+    <div class="list-group">
+        @foreach (var r in Model.Results)
+        {
+            <div class="list-group-item">
+                <div class="fw-bold">@r.Address</div>
+                <div class="small text-muted">PlaceId: @r.PlaceId — @r.Latitude, @r.Longitude</div>
+            </div>
+        }
+    </div>
+</div>

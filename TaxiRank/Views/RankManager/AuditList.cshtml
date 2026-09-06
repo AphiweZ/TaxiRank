@@ -1,0 +1,34 @@
+﻿@model TaxiRank.Models.ViewModels.AuditListVM
+@{
+    ViewBag.Title = "Audit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Audit Log</h3>
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3"><input name="entityType" class="form-control" placeholder="Entity Type" value="@Model.EntityType" /></div>
+        <div class="col-md-2"><input name="entityId" class="form-control" placeholder="Entity Id" value="@(Model.EntityId?.ToString() ?? "")" /></div>
+        <div class="col-md-2"><input name="from" type="date" class="form-control" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" /></div>
+        <div class="col-md-2"><input name="to" type="date" class="form-control" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" /></div>
+        <div class="col-md-2"><button class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead class="table-light"><tr><th>Time</th><th>Entity</th><th>Id</th><th>Field</th><th>Old</th><th>New</th><th>User</th></tr></thead>
+            <tbody>
+                @foreach (var a in Model.Rows)
+                {
+                    <tr>
+                        <td>@a.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@a.EntityType</td>
+                        <td>@a.EntityId</td>
+                        <td>@a.Field</td>
+                        <td>@a.OldValue</td>
+                        <td class="fw-bold">@a.NewValue</td>
+                        <td>@a.UserName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

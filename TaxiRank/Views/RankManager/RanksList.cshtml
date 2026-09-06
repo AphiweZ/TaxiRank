@@ -1,0 +1,49 @@
+﻿@model TaxiRank.Models.ViewModels.RankListVM
+@{
+    ViewBag.Title = "Ranks";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Taxi Ranks</h3>
+        <a href="@Url.Action("RankCreate")" class="btn btn-primary">Add Rank</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3">
+            <select name="city" class="form-select">
+                <option value="">All Cities</option>
+                @foreach (var o in Model.CityOptions)
+                {
+                    <option value="@o.Name" @(Model.City == o.Name ? "selected" : "")>@o.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input name="search" class="form-control" placeholder="Search by name or city" value="@Model.Search" />
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-secondary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light"><tr><th>Name</th><th>City</th><th>Province</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td>@r.Name</td>
+                        <td>@r.City</td>
+                        <td>@(r.Province ?? "")</td>
+                        <td>@(r.IsActive ? "Active" : "Inactive")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" href="@Url.Action("RankEdit", new { id = r.RankId })">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

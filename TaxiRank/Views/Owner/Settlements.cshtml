@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Settlements";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Rows = (IEnumerable<TaxiRank.Models.ViewModels.SettlementRowVM>)ViewBag.Rows;
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Settlements</h3>
+        <a class="btn btn-outline-secondary" href="@Url.Action("SettlementsCsv")">Export CSV</a>
+    </div>
+
+  
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="table-light"><tr><th>Date</th><th>Owner</th><th>Gross</th><th>Expenses</th><th>Driver share</th> <th>Rank Manager share</th><th>Net to Owner</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model.Rows)
+                {
+                    <tr>
+                        <td>@s.PeriodDay.ToString("yyyy-MM-dd")</td>
+                        <td>@s.OwnerName</td>
+                        <td>@s.Gross.ToString("0.00")</td>
+                        <td>@s.Expenses.ToString("0.00")</td>
+                        <td>@s.DriverShare.ToString("0.00")</td>
+                        <td>@s.ManagerShare.ToString("0.00")</td>
+                        <td class="fw-bold">@s.NetToOwner.ToString("0.00")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

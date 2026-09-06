@@ -1,0 +1,52 @@
+﻿@model TaxiRank.Models.ViewModels.RouteListVM
+@{
+    ViewBag.Title = "Routes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Routes</h3>
+        <a href="@Url.Action("RouteCreate")" class="btn btn-primary">Add Route</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-4">
+            <select name="fromRankId" class="form-select">
+                <option value="">From Rank</option>
+                @foreach (var r in Model.RankOptions)
+                {
+                    <option value="@r.Id" @(Model.FromRankId == r.Id ? "selected" : "")>@r.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-4"><input name="search" class="form-control" placeholder="To city/name" value="@Model.Search" /></div>
+        <div class="col-md-2">
+            <select name="active" class="form-select">
+                <option value="">All</option>
+                <option value="true" @(Model.Active == true ? "selected" : "")>Active</option>
+                <option value="false" @(Model.Active == false ? "selected" : "")>Inactive</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light"><tr><th>From Rank</th><th>To</th><th>Default Fare</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td>@r.FromRank</td>
+                        <td>@r.ToName</td>
+                        <td>@r.DefaultFare.ToString("0.00")</td>
+                        <td>@(r.Active ? "Active" : "Inactive")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-dark" href="@Url.Action("RouteDetail", new { id = r.RouteId })">Open</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

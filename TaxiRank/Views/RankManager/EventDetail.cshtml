@@ -1,0 +1,141 @@
+﻿@model TaxiRank.Models.ViewModels.ManagerEventDetailVM
+@{
+    ViewBag.Title = "Event Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>Event @Model.CharterId</h3>
+        <a class="btn btn-outline-secondary" href="@Url.Action("EventRequests")">Back</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div id="map"
+                 class="border rounded"
+                 style="height:380px"
+                 data-alat="@((Model.PickupLat ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                 data-alng="@((Model.PickupLng ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                 data-blat="@((Model.DropLat   ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                 data-blng="@((Model.DropLng   ?? 0m).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                 data-aplace="@Model.PickupPlaceId"
+                 data-bplace="@Model.DropPlaceId"></div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div><strong>Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</div>
+                    <div><strong>Event:</strong> @Model.EventType</div>
+                    <div><strong>Taxis:</strong> @Model.TaxiCount @(Model.ReturnTrip ? "(Return)" : "")</div>
+                    <div><strong>Status:</strong> @Model.Status @(Model.IsPaid ? "· Paid" : "")</div>
+                    <div><strong>Quote:</strong> @Model.QuoteAmount.ToString("0.00")</div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Approve / Reject</strong></div>
+                <div class="card-body">
+                    @using (Html.BeginForm("EventApprove", "RankManager", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("CharterId", Model.CharterId)
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Quote ZAR</span>
+                            <input class="form-control" name="QuoteAmount" type="number" step="0.01" value="@Model.QuoteAmount.ToString("0.00")" />
+                        </div>
+                        <div class="input-group">
+                            <select class="form-select" name="Decision">
+                                <option>Approved</option>
+                                <option>Rejected</option>
+                            </select>
+                            <button class="btn btn-primary">Save</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Assign Vehicles</strong></div>
+                <div class="card-body">
+                    @if (Model.IsPaid)
+                    {
+                        <a class="btn btn-success" href="@Url.Action("EventAssign", new { id = Model.CharterId })">Assign</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" disabled>Awaiting Payment</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Maps directly here -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&libraries=places"></script>
+<script>
+    (function () {
+        function num(v) { var n = parseFloat(v); return isNaN(n) ? null : n; }
+
+        function init() {
+            var el = document.getElementById("map");
+            if (!el) return;
+
+            var aLat = num(el.dataset.alat), aLng = num(el.dataset.alng);
+            var bLat = num(el.dataset.blat), bLng = num(el.dataset.blng);
+            var aPlace = el.dataset.aplace || null;
+            var bPlace = el.dataset.bplace || null;
+
+            var map = new google.maps.Map(el, { center: { lat: -28.5, lng: 24.7 }, zoom: 6 });
+            var dirSvc = new google.maps.DirectionsService();
+            var dirDisp = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
+            var mkA = new google.maps.Marker({ map: map, label: "A" });
+            var mkB = new google.maps.Marker({ map: map, label: "B" });
+
+            function haveCoords(lat, lng) { return typeof lat === "number" && typeof lng === "number"; }
+
+            function resolveByPlaceId(placeId, next) {
+                if (!placeId) { next(null); return; }
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ placeId: placeId }, function (res, st) {
+                    if (st === "OK" && res && res[0]) {
+                        next(res[0].geometry.location);
+                    } else {
+                        next(null);
+                    }
+                });
+            }
+
+            function ensurePoint(lat, lng, placeId, done) {
+                if (haveCoords(lat, lng)) {
+                    done(new google.maps.LatLng(lat, lng));
+                } else {
+                    resolveByPlaceId(placeId, function (loc) {
+                        done(loc || new google.maps.LatLng(-28.5, 24.7));
+                    });
+                }
+            }
+
+            ensurePoint(aLat, aLng, aPlace, function (A) {
+                ensurePoint(bLat, bLng, bPlace, function (B) {
+                    mkA.setPosition(A);
+                    mkB.setPosition(B);
+                    dirSvc.route({ origin: A, destination: B, travelMode: google.maps.TravelMode.DRIVING }, function (res, st) {
+                        if (st === "OK") {
+                            dirDisp.setDirections(res);
+                            map.fitBounds(res.routes[0].bounds);
+                        } else {
+                            // fallback: just center between points
+                            var bounds = new google.maps.LatLngBounds();
+                            bounds.extend(A); bounds.extend(B);
+                            map.fitBounds(bounds);
+                        }
+                    });
+                });
+            });
+        }
+
+        if (window.google && google.maps) init(); else window.addEventListener("load", init);
+    })();
+</script>

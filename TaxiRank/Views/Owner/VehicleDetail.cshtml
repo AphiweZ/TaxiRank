@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Vehicle Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var mapsKey = System.Configuration.ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+    var v = (TaxiRank.Models.Vehicle)ViewBag.Vehicle;
+    var docs = (IEnumerable<TaxiRank.Models.VehicleDocument>)ViewBag.Documents;
+    TaxiRank.Models.Rank rank = null;
+    if (v != null && v.HomeRankId.HasValue)
+    { 
+        using (var db = new TaxiRank.Models.TaxiRankDb3Entities2())
+        {
+            rank = db.Ranks.FirstOrDefault(r => r.RankId == v.HomeRankId.Value);
+        }
+    }
+    var lat = rank != null && rank.Latitude.HasValue ? (double?)rank.Latitude.Value : null;
+    var lng = rank != null && rank.Longitude.HasValue ? (double?)rank.Longitude.Value : null;
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="mb-0">Vehicle — @v.RegNo</h3>
+            <div class="text-muted">@v.Make @v.Model • Seats: @v.Seats</div>
+            <div class="text-muted">Home Rank: @(rank==null ? "-" : (rank.Name + ", " + rank.City))</div>
+        </div>
+       
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-11">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Documents</strong></div>
+                <div class="list-group list-group-flush">
+                    @foreach (var d in docs)
+                    {
+                        var isImg = d.FileName != null && (d.FileName.EndsWith(".jpg", System.StringComparison.OrdinalIgnoreCase) || d.FileName.EndsWith(".jpeg", System.StringComparison.OrdinalIgnoreCase) || d.FileName.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase));
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="fw-bold">@d.DocType</div>
+                                    <div class="small text-muted">@d.FileName — @d.UploadedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-dark" href="@Url.Action("VehicleDocDownload", new { id = d.VehicleDocumentId })">Download</a>
+                            </div>
+                            @if (isImg)
+                            {
+                                var src = "data:image/*;base64," + Convert.ToBase64String(d.FileData);
+                                <div class="mt-2"><img src="@src" class="img-thumbnail" style="max-height:220px" alt="Doc" /></div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("VehicleDocUpload", "Owner", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="VehicleId" value="@v.VehicleId" />
+                        <div class="row g-2">
+                            <div class="col-md-4"><input class="form-control" name="DocType" placeholder="Doc Type" required /></div>
+                            <div class="col-md-6"><input class="form-control" type="file" name="upload" required /></div>
+                            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Upload</button></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+        </div>
+    </div>
+</div>
+

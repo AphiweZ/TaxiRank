@@ -1,0 +1,62 @@
+﻿@model TaxiRank.Models.ViewModels.BookingCreateVM
+@{
+    ViewBag.Title = "Quick Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3 class="mb-3">Quick Booking</h3>
+    @using (Html.BeginForm("QuickBooking", "RankManager", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="DepartureId" value="@Model.DepartureId" />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Passenger Name</label>
+                <input class="form-control" name="Passenger.FullName" required />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Phone</label>
+                <input class="form-control" name="Passenger.Phone" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Seats</label>
+                <input type="number" class="form-control" name="SeatsCount" value="@Model.SeatsCount" min="1" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fare Each</label>
+                <input type="number" step="0.01" class="form-control" name="FareEach" value="@Model.FareEach" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Payment</label>
+                <select class="form-select" name="PaymentMethod">
+                    @foreach (var m in new[] { "Cash", "Card" })
+                    {
+                        <option @(Model.PaymentMethod == m ? "selected" : "")>@m</option>
+}
+                </select>
+            </div>
+        </div>
+
+        <hr />
+        <div class="mb-2"><strong>Select Seats</strong></div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            @foreach (var s in Model.AvailableSeats)
+            {
+                if (s.Status == "Free")
+                {
+                    <label class="border rounded px-2 py-1">
+                        <input type="checkbox" name="selectedSeats" value="@s.SeatNo" class="form-check-input me-1" />
+                        Seat @s.SeatNo
+                    </label>
+                }
+                else
+                {
+                    <span class="border rounded px-2 py-1 bg-danger text-white">Seat @s.SeatNo (@s.Status)</span>
+                }
+            }
+        </div>
+
+        <button class="btn btn-primary">Create Booking</button>
+        <a class="btn btn-outline-secondary" href="@Url.Action("Detail", new { id = Model.DepartureId })">Back</a>
+    }
+</div>

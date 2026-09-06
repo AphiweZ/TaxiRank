@@ -1,0 +1,349 @@
+﻿@model TaxiRank.Models.ViewModels.DepartureDetailVM
+@{
+    ViewBag.Title = "Departure Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var mapsKey = System.Configuration.ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+
+    string ptsJson = "[]";
+    if (!string.IsNullOrWhiteSpace(mapsKey))
+    {
+        using (var db = new TaxiRank.Models.TaxiRankDb3Entities2())
+        {
+            var dep = db.Departures.FirstOrDefault(x => x.DepartureId == Model.DepartureId);
+            if (dep != null)
+            {
+                var route = db.Routes.FirstOrDefault(r => r.RouteId == dep.RouteId);
+                var pts = new List<object>();
+                if (route != null)
+                {
+                    var from = db.Ranks.FirstOrDefault(rk => rk.RankId == route.FromRankId);
+                    if (from != null && from.Latitude.HasValue && from.Longitude.HasValue)
+                    {
+                        pts.Add(new { lat = (double)from.Latitude.Value, lng = (double)from.Longitude.Value, name = from.Name + " (From)" });
+                    }
+                    if (route.ToLatitude.HasValue && route.ToLongitude.HasValue)
+                    {
+                        pts.Add(new { lat = (double)route.ToLatitude.Value, lng = (double)route.ToLongitude.Value, name = route.ToName + " (To)" });
+                    }
+                }
+                ptsJson = Newtonsoft.Json.JsonConvert.SerializeObject(pts);
+            }
+        }
+    }
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Departure @Model.DepartureId</h3>
+        <div class="text-muted">@Model.Date.ToString("yyyy-MM-dd") &middot; @Model.PlannedTime</div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-xl-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4"><div><strong>Route:</strong> @Model.RouteName</div></div>
+                        <div class="col-md-4"><div><strong>Vehicle:</strong> @Model.VehicleReg</div></div>
+                        <div class="col-md-4"><div><strong>Driver:</strong> @Model.DriverName</div></div>
+                        <div class="col-md-4"><div><strong>Status:</strong> @Model.Status</div></div>
+                        <div class="col-md-4"><div><strong>Min Fill:</strong> @Model.MinFill</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Seat Map</strong>
+                    <div>
+                        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ManifestCsv", new { id = Model.DepartureId })">Manifest CSV</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("CashSheetCsv", new { id = Model.DepartureId })">Cash Sheet</a>
+                        <a class="btn btn-sm btn-outline-dark" href="@Url.Action("PassengerPhonesCsv", new { id = Model.DepartureId })">Phones</a>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var s in Model.SeatMap)
+                        {
+                            var css = s.Status == "Booked" ? "bg-danger text-white" : "bg-light";
+                            <div class="border rounded px-2 py-1 @css">Seat @s.SeatNo (@s.Status)</div>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        @using (Html.BeginForm("HoldSeat", "RankManager", FormMethod.Post, new { @class = "col-md-6 col-xl-4" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="departureId" value="@Model.DepartureId" />
+                            <div class="input-group">
+                                <span class="input-group-text">Seat</span>
+                                <input class="form-control" type="number" name="seatNo" min="1" />
+                            </div>
+                            <div class="input-group mt-2">
+                                <span class="input-group-text">PNR</span>
+                                <input class="form-control" type="text" name="pnr" />
+                            </div>
+                            <button class="btn btn-sm btn-primary mt-2">Hold</button>
+                        }
+                        @using (Html.BeginForm("ReleaseSeat", "RankManager", FormMethod.Post, new { @class = "col-md-6 col-xl-4" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="departureId" value="@Model.DepartureId" />
+                            <div class="input-group">
+                                <span class="input-group-text">Seat</span>
+                                <input class="form-control" type="number" name="seatNo" min="1" />
+                                <button class="btn btn-outline-danger" type="submit">Release</button>
+                            </div>
+                        }
+                        @using (Html.BeginForm("SwapSeats", "RankManager", FormMethod.Post, new { @class = "col-md-12 col-xl-4" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="departureId" value="@Model.DepartureId" />
+                            <div class="input-group">
+                                <span class="input-group-text">From</span>
+                                <input class="form-control" type="number" name="seatFrom" min="1" />
+                                <span class="input-group-text">To</span>
+                                <input class="form-control" type="number" name="seatTo" min="1" />
+                                <button class="btn btn-outline-dark" type="submit">Swap</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Bookings</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>PNR</th><th>Passenger</th><th>Seats</th><th>Total</th><th>Status</th><th>Method</th><th></th></tr></thead>
+                        <tbody>
+                            @foreach (var b in Model.Bookings)
+                            {
+                                <tr>
+                                    <td>@b.Pnr</td>
+                                    <td>@b.PassengerName</td>
+                                    <td>@b.SeatsCount</td>
+                                    <td>@b.ExtendedAmount.ToString("0.00")</td>
+                                    <td>@b.Status</td>
+                                    <td>@b.PaymentMethod</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-outline-dark" href="@Url.Action("Ticket", new { id = b.BookingId })">Ticket</a>
+                                        @using (Html.BeginForm("CancelBooking", "RankManager", FormMethod.Post, new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@b.BookingId" />
+                                            <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Payments</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Amount</th><th>Method</th><th>Ref</th></tr></thead>
+                        <tbody>
+                            @foreach (var p in Model.Payments)
+                            {
+                                <tr>
+                                    <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@p.Amount.ToString("0.00")</td>
+                                    <td>@p.Method</td>
+                                    <td class="text-truncate" style="max-width:160px">@p.Reference</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Ready Checklist</strong>
+                    <small class="text-muted">Update & Status</small>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("ReadyChecklist", "RankManager", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.DepartureId" />
+
+                       
+                        <input type="hidden" name="minFill" value="false" />
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="chk1" name="minFill" value="true" />
+                            <label class="form-check-label" for="chk1">Minimum fill reached</label>
+                        </div>
+
+                        <input type="hidden" name="cashVerified" value="false" />
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="chk2" name="cashVerified" value="true" />
+                            <label class="form-check-label" for="chk2">Cash verified</label>
+                        </div>
+
+                        <input type="hidden" name="floatIssued" value="false" />
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="chk3" name="floatIssued" value="true" />
+                            <label class="form-check-label" for="chk3">Float issued</label>
+                        </div>
+
+                        <input type="hidden" name="vehicleCleared" value="false" />
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="chk4" name="vehicleCleared" value="true" />
+                            <label class="form-check-label" for="chk4">Vehicle cleared</label>
+                        </div>
+
+                        <button class="btn btn-primary btn-sm mt-2">Save</button>
+                    }
+
+                    <hr />
+                    @using (Html.BeginForm("UpdateStatus", "RankManager", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.DepartureId" />
+                        <div class="input-group">
+                            <select class="form-select" name="status">
+                                @foreach (var s in new[] { "Queued", "Boarding", "Ready", "Departed", "Cancelled" })
+                                {
+                                    <option>@s</option>
+                                }
+                            </select>
+                            <button class="btn btn-outline-dark">Update</button>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="ovr" name="overrideReady" />
+                            <label class="form-check-label" for="ovr">Override ready state</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Quick Booking</strong></div>
+                <div class="card-body">
+                    <a class="btn btn-sm btn-success" href="@Url.Action("QuickBooking", new { departureId = Model.DepartureId })">Create Booking</a>
+                    <hr class="my-2" />
+                    @using (Html.BeginForm("VerifyTicket", "RankManager", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="departureId" value="@Model.DepartureId" />
+                        <div class="input-group">
+                            <span class="input-group-text">PNR</span>
+                            <input class="form-control" type="text" name="pnr" />
+                            <button class="btn btn-outline-primary" type="submit">Verify</button>
+                        </div>
+                        if (TempData["VerifyResult"] != null)
+                        {
+                            <div class="mt-2 small">Result: <strong>@TempData["VerifyResult"]</strong></div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Map</strong></div>
+                <div id="dep-map" style="height:260px"></div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Money</strong></div>
+                <div class="card-body">
+                    @using (Html.BeginForm("IssueFloat", "RankManager", FormMethod.Post, new { enctype = "application/x-www-form-urlencoded" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="DepartureId" value="@Model.DepartureId" />
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Float</span>
+                            <input class="form-control" name="AmountIssued" type="number" step="0.01" />
+                        </div>
+                        <input class="form-control mb-2" name="Purpose" placeholder="Purpose (optional)" />
+                        <button class="btn btn-sm btn-outline-dark">Issue</button>
+                    }
+                    <hr />
+                    @using (Html.BeginForm("Cashup", "RankManager", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="DepartureId" value="@Model.DepartureId" />
+                        <div class="input-group">
+                            <span class="input-group-text">Cashup</span>
+                            <input class="form-control" name="CountedAmount" type="number" step="0.01" />
+                            <button class="btn btn-outline-success">Save</button>
+                        </div>
+                    }
+                    <hr />
+                    @using (Html.BeginForm("RecordExpense", "RankManager", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="DepartureId" value="@Model.DepartureId" />
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Expense</span>
+                            <input class="form-control" name="Amount" type="number" step="0.01" />
+                        </div>
+                        <input class="form-control mb-2" name="Type" placeholder="Type/Notes" />
+                        <input class="form-control mb-2" type="file" name="proof" />
+                        <button class="btn btn-sm btn-outline-danger">Record Expense</button>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Incidents</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Type</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            @foreach (var i in Model.Incidents)
+                            {
+                                <tr>
+                                    <td>@i.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@i.Type</td>
+                                    <td class="text-truncate" style="max-width:180px">@i.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("LogIncident", "RankManager", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="DepartureId" value="@Model.DepartureId" />
+                        <input class="form-control mb-2" name="Type" placeholder="Type" />
+                        <textarea class="form-control mb-2" name="Notes" rows="2" placeholder="Notes"></textarea>
+                        <input class="form-control mb-2" type="file" name="photo" />
+                        <button class="btn btn-sm btn-outline-warning">Log Incident</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(mapsKey))
+{
+    <script src="https://maps.googleapis.com/maps/api/js?key=@mapsKey"></script>
+    <script>
+    (function(){
+        var points = @Html.Raw(ptsJson);
+        function init(){
+            var el = document.getElementById("dep-map"); if(!el) return;
+            var center = points.length ? {lat:points[0].lat, lng:points[0].lng} : {lat:-28.5, lng:24.7};
+            var map = new google.maps.Map(el, {zoom: points.length>1?6:7, center:center});
+            for (var i=0;i<points.length;i++){
+                new google.maps.Marker({map:map, position:{lat:points[i].lat, lng:points[i].lng}, title: points[i].name});
+            }
+            if(points.length==2){
+                new google.maps.Polyline({ map:map, path:[{lat:points[0].lat,lng:points[0].lng},{lat:points[1].lat,lng:points[1].lng}] });
+            }
+        }
+        if (window.google && google.maps) init(); else window.addEventListener("load", init);
+    })();
+    </script>
+}

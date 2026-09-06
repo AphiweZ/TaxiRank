@@ -1,0 +1,38 @@
+﻿@model TaxiRank.Models.ViewModels.OwnerBookingsVM
+@{
+    ViewBag.Title = "Bookings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Bookings</h3>
+        <a class="btn btn-outline-secondary" href="@Url.Action("BookingsCsv", new { from = Model.FromDate, to = Model.ToDate })">Export CSV</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3"><input class="form-control" type="date" name="from" value="@(Model.FromDate.HasValue?Model.FromDate.Value.ToString("yyyy-MM-dd"):"")" /></div>
+        <div class="col-md-3"><input class="form-control" type="date" name="to" value="@(Model.ToDate.HasValue?Model.ToDate.Value.ToString("yyyy-MM-dd"):"")" /></div>
+        <div class="col-md-3"><input class="form-control" name="pnr" value="@Model.Pnr" placeholder="PNR (optional)" /></div>
+        <div class="col-md-3 d-grid"><button class="btn btn-outline-secondary">Filter</button></div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>PNR</th><th>Passenger</th><th>Seats</th><th>Fare</th><th>Total</th><th>Status</th><th>Method</th></tr></thead>
+            <tbody>
+                @foreach (var b in Model.Rows)
+                {
+                    <tr>
+                        <td>@b.Pnr</td>
+                        <td>@b.PassengerName</td>
+                        <td>@b.SeatsCount</td>
+                        <td>@b.FareEach.ToString("0.00")</td>
+                        <td>@b.ExtendedAmount.ToString("0.00")</td>
+                        <td>@b.Status</td>
+                        <td>@b.PaymentMethod</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,117 @@
+﻿@model TaxiRank.Models.ViewModels.BookingCreateVM
+@{
+    ViewBag.Title = "Create Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Choose Your Seats</h3>
+    </div>
+
+    @using (Html.BeginForm("Book", "Customer", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.DepartureId)
+        <input type="hidden" name="PaymentMethod" value="Cash" />
+        <input type="hidden" name="Status" value="Held" />
+
+        @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-header"><strong>Select Seats</strong></div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            @foreach (var s in Model.AvailableSeats)
+                            {
+                                var disabled = s.Status != "Free" ? "disabled" : null;
+                                <div class="col-2">
+                                    <label class="w-100">
+                                        <input type="checkbox" name="selectedSeats" value="@s.SeatNo" class="form-check-input me-1" @disabled />
+                                        <span class="badge w-100 @(s.Status=="Free"?"bg-success":"bg-secondary")">@s.SeatNo</span>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header"><strong>Passenger</strong></div>
+                    <div class="card-body">
+                        <div class="mb-2"><input id="FullName" name="Passenger.FullName" class="form-control" placeholder="Full Name" required /></div>
+                        <div class="mb-2"><input id="Phone" name="Passenger.Phone" class="form-control" placeholder="Phone" required /></div>
+                        <div class="mb-2"><input name="Passenger.NextOfKinName" class="form-control" placeholder="Next of Kin" /></div>
+                        <div class="mb-2"><input name="Passenger.NextOfKinPhone" class="form-control" placeholder="Next of Kin Phone" /></div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header"><strong>Fare & Summary</strong></div>
+                    <div class="card-body row g-2">
+                        <div class="col-4">
+                            <label class="form-label">Seats</label>
+                            @Html.TextBoxFor(m => m.SeatsCount, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Fare Each</label>
+                            @Html.TextBoxFor(m => m.FareEach, new { @class = "form-control", @readonly = "readonly", tabindex = "-1" })
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Total</label>
+                            <input id="TotalAmount" class="form-control" value="@(Model.FareEach * Model.SeatsCount).ToString(" 0.00")" readonly tabindex="-1" />
+                        </div>
+                        <div class="col-12 d-flex gap-2 mt-2">
+                            <button type="submit" class="btn btn-primary" id="btnContinue" disabled>Continue</button>
+                            <a class="btn btn-outline-secondary" href="@Url.Action("Checkout", new{ id=Model.DepartureId })">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            function canSubmit() {
+                var seats = document.querySelectorAll('input[name="selectedSeats"]:checked').length;
+                var nameOk = (document.getElementById('FullName').value || '').trim().length > 0;
+                var phoneOk = (document.getElementById('Phone').value || '').trim().length > 0;
+                return seats > 0 && nameOk && phoneOk;
+            }
+
+            function recalc() {
+                var checked = document.querySelectorAll('input[name="selectedSeats"]:checked').length;
+                var seatsInput = document.getElementById('@Html.IdFor(m => m.SeatsCount)');
+                var fareInput  = document.getElementById('@Html.IdFor(m => m.FareEach)');
+                var totalEl    = document.getElementById('TotalAmount');
+                var btn        = document.getElementById('btnContinue');
+
+                seatsInput.value = checked;
+                var fareEach = parseFloat(fareInput.value || "0");
+                totalEl.value = (checked * fareEach).toFixed(2);
+                btn.disabled = !canSubmit();
+            }
+
+            Array.prototype.forEach.call(document.querySelectorAll('input[name="selectedSeats"]'),
+                function (cb) { cb.addEventListener('change', recalc); });
+
+            document.getElementById('FullName').addEventListener('input', recalc);
+            document.getElementById('Phone').addEventListener('input', recalc);
+
+            document.getElementById('btnContinue').addEventListener('click', function (e) {
+                if (!canSubmit()) {
+                    e.preventDefault();
+                    recalc();
+                }
+            });
+
+            recalc();
+        })();
+    </script>
+}

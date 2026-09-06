@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Create User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Create User</h3>
+    @using (Html.BeginForm("UserCreate", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Username</label>
+                <input name="Username" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Password</label>
+                <input name="Password" type="password" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Display Name</label>
+                <input name="DisplayName" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Role</label>
+                <select name="Role" class="form-select" required>
+                    <option>Admin</option>
+                    <option>RankManager</option>
+                    <option>Owner</option>
+                    <option>Driver</option>
+                    <option>Customer</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Phone</label>
+                <input name="Phone" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input name="Email" type="email" class="form-control" />
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("UsersList")">Cancel</a>
+            </div>
+        </div>
+    }
+</div>

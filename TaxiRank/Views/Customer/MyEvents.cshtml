@@ -1,0 +1,40 @@
+﻿@model TaxiRank.Models.ViewModels.CustomerEventsListVM
+@{
+    ViewBag.Title = "My Event Bookings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>My Event Bookings</h3>
+        <a class="btn btn-primary" href="@Url.Action("RequestEvent")">New Request</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>Date</th><th>Event</th><th>Taxis</th><th>Status</th><th>Quote</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td>@r.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@r.EventType</td>
+                        <td>@(r.TaxiCount) @(r.ReturnTrip ? "(Return)" : "")</td>
+                        <td>@r.Status @(r.IsPaid ? "· Paid" : "")</td>
+                        <td>@r.QuoteAmount.ToString("0.00")</td>
+                        <td class="text-end">
+                            @if (r.Status == "Approved" && !r.IsPaid)
+                            {
+                                <a class="btn btn-sm btn-success me-2" href="@Url.Action("PayEvent", new { id=r.CharterId })">Pay</a>
+
+                                using (Html.BeginForm("DeclineEvent", "Customer", new { id = r.CharterId }, FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

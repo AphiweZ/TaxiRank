@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "My Bookings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var rows = ViewBag.Rows as List<TaxiRank.Models.ViewModels.BookingRowVM>;
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">My Bookings</h3>
+        <a class="btn btn-outline-secondary" href="@Url.Action("MyBookingsCsv", new { from = Request["from"], to = Request["to"] })">Export CSV</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3"><input name="from" type="date" class="form-control" value="@Request["from"]" /></div>
+        <div class="col-md-3"><input name="to" type="date" class="form-control" value="@Request["to"]" /></div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">Any status</option>
+                <option @(Request["status"] == "Held" ? "selected" : "")>Held</option>
+                <option @(Request["status"] == "Confirmed" ? "selected" : "")>Confirmed</option>
+                <option @(Request["status"] == "Cancelled" ? "selected" : "")>Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-3"><button class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>PNR</th><th>Passenger</th><th>Seats</th><th>Fare</th><th>Total</th><th>Status</th><th>Method</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var b in rows)
+                {
+                    <tr>
+                        <td>@b.Pnr</td>
+                        <td>@b.PassengerName</td>
+                        <td>@b.SeatsCount</td>
+                        <td>@b.FareEach.ToString("0.00")</td>
+                        <td>@b.ExtendedAmount.ToString("0.00")</td>
+                        <td>@b.Status</td>
+                        <td>@b.PaymentMethod</td>
+                        <td class="text-end">
+                            @if (b.Status == "Confirmed")
+                            {
+                                <a class="btn btn-sm btn-outline-dark" href="@Url.Action("Ticket", new { id = b.BookingId })">Ticket</a>
+                            }
+                            else if (b.Status == "Held")
+                            {
+                                <a class="btn btn-sm btn-success" href="@Url.Action("Checkout", new { id = b.BookingId })">Pay</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

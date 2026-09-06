@@ -1,0 +1,44 @@
+﻿@model TaxiRank.Models.ViewModels.ManagerEventAssignVM
+@{
+    ViewBag.Title = "Assign Vehicles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>Assign Vehicles (@Model.RequiredTaxis) </h3>
+        <a class="btn btn-outline-secondary" href="@Url.Action("EventDetail", new { id=Model.CharterId })">Back</a>
+    </div>
+    @using (Html.BeginForm("EventAssign", "RankManager", FormMethod.Post, new { id = "f" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CharterId)
+        <div id="rows" class="vstack gap-2">
+            @for (int i = 0; i < Model.Assignments.Count; i++)
+            {
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <select name="Assignments[@i].VehicleId" class="form-select">
+                            <option value="">Vehicle</option>
+                            @foreach (var v in Model.VehicleOptions)
+                            {
+                                <option value="@v.Id" @(Model.Assignments[i].VehicleId == v.Id ? "selected" : "")>@v.Name</option>
+}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select name="Assignments[@i].DriverId" class="form-select">
+                            <option value="">Driver</option>
+                            @foreach (var d in Model.DriverOptions)
+                            {
+                                <option value="@d.Id" @(Model.Assignments[i].DriverId == d.Id ? "selected" : "")>@d.Name</option>
+}
+                        </select>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary">Save Assignments</button>
+        </div>
+    }
+</div>

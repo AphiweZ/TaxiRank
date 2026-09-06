@@ -1,0 +1,183 @@
+﻿@model TaxiRank.Models.ViewModels.CustomerSearchVM
+@{
+    ViewBag.Title = "Search Departures";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Search</h3>
+        <img src="~/Content/images/minibus.jpg" class="rounded" style="height:48px" alt="Taxi" />
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-6">
+            @Html.DropDownList(
+                "routeId",
+                new SelectList(Model.RouteOptions, "Id", "Name", Model.RouteId),
+                "Choose a route",
+                new { @class = "form-select", id = "routeSelect" }
+            )
+        </div>
+        <div class="col-md-3">
+            <input name="date" type="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-secondary w-100">Find</button>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="resultsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:120px">Time</th>
+                                <th>Route</th>
+                                <th style="width:140px">Vehicle</th>
+                                <th style="width:120px">Seats Free</th>
+                                <th style="width:120px">Fare</th>
+                                <th style="width:90px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Rows)
+                            {
+                                <tr class="result-row" data-dest="@r.RouteName">
+                                    <td>@r.PlannedTime</td>
+                                    <td>
+                                        <span class="from-route text-muted"></span>
+                                        <span class="mx-1">→</span>
+                                        <strong class="to-route">@r.RouteName</strong>
+                                    </td>
+                                    <td>@r.VehicleReg</td>
+                                    <td>@r.SeatsFree</td>
+                                    <td>@r.Fare.ToString("0.00")</td>
+                                    <td class="text-end">
+                                        <a href="@Url.Action("Book", new { departureId = r.DepartureId })" class="btn btn-sm btn-primary">Select</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (!Model.Rows.Any())
+                {
+                    <div class="p-3 text-muted">No departures found for the selected date/route.</div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Map</strong></div>
+                <div id="map" style="height:420px"></div>
+                <div class="card-body small text-muted">
+                    Click a row to preview the route from your selected rank to the destination city.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Google Maps (loaded directly here, not from controller) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&libraries=places"></script>
+<script>
+    (function () {
+        var map, dirSvc, dirDisp, mkA, mkB;
+
+        function getSelectedOriginText() {
+            var sel = document.getElementById("routeSelect");
+            if (!sel) return null;
+            var txt = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+            // Expecting "Rank Name → City"
+            if (!txt || txt.indexOf("→") === -1) return null;
+            return txt.split("→")[0].trim(); // left side (rank/address)
+        }
+
+        function setMarkers(a, b) {
+            if (!mkA) mkA = new google.maps.Marker({ map: map, label: "A" });
+            if (!mkB) mkB = new google.maps.Marker({ map: map, label: "B" });
+            mkA.setPosition(a);
+            mkB.setPosition(b);
+        }
+
+        function routeByAddress(fromText, toText) {
+            if (!fromText || !toText) return;
+
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: fromText }, function (resA, stA) {
+                if (stA !== "OK" || !resA.length) return;
+                var a = resA[0].geometry.location;
+
+                geocoder.geocode({ address: toText }, function (resB, stB) {
+                    if (stB !== "OK" || !resB.length) return;
+                    var b = resB[0].geometry.location;
+
+                    dirSvc.route({
+                        origin: a,
+                        destination: b,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    }, function (res, st) {
+                        if (st === "OK") {
+                            dirDisp.setDirections(res);
+                            setMarkers(a, b);
+                            map.fitBounds(res.routes[0].bounds);
+                        }
+                    });
+                });
+            });
+        }
+
+        function fillRouteColumnFromOrigin() {
+            var origin = getSelectedOriginText();
+            var fromEls = document.querySelectorAll("#resultsTable .from-route");
+            for (var i = 0; i < fromEls.length; i++) {
+                fromEls[i].textContent = origin ? origin : "From rank";
+            }
+        }
+
+        function bindRows() {
+            var rows = document.querySelectorAll("#resultsTable tbody tr.result-row");
+            var originText = getSelectedOriginText();
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].addEventListener("click", function () {
+                    var toText = this.getAttribute("data-dest") || "";
+                    // If no origin selected (user picked "Choose a route"), try to use the text before the arrow
+                    var fromText = originText || (document.getElementById("routeSelect").options[document.getElementById("routeSelect").selectedIndex]?.text.split("→")[0].trim());
+                    if (!fromText) {
+                        // graceful fallback: center of South Africa
+                        map.setCenter({ lat: -28.5, lng: 24.7 });
+                        map.setZoom(6);
+                        return;
+                    }
+                    routeByAddress(fromText, toText);
+                });
+            }
+        }
+
+        function init() {
+            var el = document.getElementById("map");
+            if (!el) return;
+            map = new google.maps.Map(el, { zoom: 6, center: { lat: -28.5, lng: 24.7 } });
+            dirSvc = new google.maps.DirectionsService();
+            dirDisp = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
+
+            
+            fillRouteColumnFromOrigin();
+            bindRows();
+
+           
+            var sel = document.getElementById("routeSelect");
+            if (sel) {
+                sel.addEventListener("change", function () {
+                    fillRouteColumnFromOrigin();
+                });
+            }
+        }
+
+        if (window.google && google.maps) { init(); }
+        else window.addEventListener("load", init);
+    })();
+</script>

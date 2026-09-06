@@ -1,0 +1,67 @@
+﻿@model TaxiRank.Models.ViewModels.DepartureCreateVM
+@{
+    ViewBag.Title = "Create Departure";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3 class="mb-3">Create Departure</h3>
+    @using (Html.BeginForm("CreateDeparture", "RankManager", FormMethod.Post, new { @class = "row g-3" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="col-md-6">
+            <label class="form-label">Route</label>
+            <select class="form-select" name="RouteId" required>
+                <option value="">Select…</option>
+                @foreach (var r in Model.RouteOptions)
+                {
+                    <option value="@r.Id">@r.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="Date" value="@Model.Date.ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Planned Time</label>
+            <input type="time" class="form-control" name="PlannedTime" value="@Model.PlannedTime" required />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Vehicle</label>
+            <select class="form-select" name="VehicleId" required>
+                <option value="">Select…</option>
+                @foreach (var v in Model.VehicleOptions)
+                {
+                    <option value="@v.Id">@v.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Driver</label>
+            <select class="form-select" name="DriverId" required>
+                <option value="">Select…</option>
+                @foreach (var d in Model.DriverOptions)
+                {
+                    <option value="@d.Id">@d.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Min Fill</label>
+            <input type="number" class="form-control" name="MinFill" value="@Model.MinFill" min="0" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="Status">
+                @foreach (var s in new[] { "Queued", "Boarding", "Ready" })
+                {
+                    <option @(Model.Status == s ? "selected" : "")>@s</option>
+}
+            </select>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary">Create</button>
+            <a href="@Url.Action("Today")" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    }
+</div>

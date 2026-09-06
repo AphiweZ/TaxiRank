@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Incidents";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var rows = (IEnumerable<TaxiRank.Models.ViewModels.IncidentRowVM>)ViewBag.Rows;
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Incidents</h3>
+        <img src="~/Content/images/incident.jpg" style="height:40px" class="rounded" alt="Incidents" />
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-4"><input class="form-control" type="date" name="from" /></div>
+        <div class="col-md-4"><input class="form-control" type="date" name="to" /></div>
+        <div class="col-md-4 d-grid"><button class="btn btn-outline-secondary">Filter</button></div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>When</th><th>Type</th><th>Notes</th></tr></thead>
+            <tbody>
+                @foreach (var i in rows)
+                {
+                    <tr>
+                        <td>@i.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@i.Type</td>
+                        <td class="text-truncate" style="max-width:500px">@i.Notes</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

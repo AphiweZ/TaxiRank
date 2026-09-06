@@ -1,0 +1,55 @@
+﻿@model TaxiRank.Models.ViewModels.TelemetryListVM
+@{
+    ViewBag.Title = "Telemetry Trail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var mapsKey = System.Configuration.ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+
+   
+    var pathJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+        (Model.Points ?? new List<TaxiRank.Models.ViewModels.TelemetryPointVM>())
+            .Select(p => new { lat = (double)p.Latitude, lng = (double)p.Longitude, spd = p.SpeedKph, ts = p.Timestamp.ToString("s") })
+    );
+}
+<div class="container py-3">
+    <h3 class="mb-3">Telemetry — Departure @Model.DepartureId</h3>
+    <div id="tele-map" style="height:460px" class="mb-3"></div>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead class="table-light"><tr><th>Time</th><th>Lat</th><th>Lng</th><th>Speed (kph)</th><th>Battery</th></tr></thead>
+            <tbody>
+                @foreach (var p in Model.Points)
+                {
+                    <tr>
+                        <td>@p.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@p.Latitude</td>
+                        <td>@p.Longitude</td>
+                        <td>@p.SpeedKph</td>
+                        <td>@p.Battery</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(mapsKey))
+{
+    <script src="https://maps.googleapis.com/maps/api/js?key=@mapsKey"></script>
+    <script>
+    (function(){
+        var pts = @Html.Raw(pathJson);
+        function init(){
+            var el = document.getElementById("tele-map"); if(!el) return;
+            var center = pts.length ? {lat:pts[0].lat, lng:pts[0].lng} : {lat:-28.5, lng:24.7};
+            var map = new google.maps.Map(el, {zoom: pts.length?10:5, center:center});
+            if (pts.length){
+                var path = pts.map(function(p){ return {lat:p.lat, lng:p.lng}; });
+                new google.maps.Polyline({ map:map, path:path });
+                new google.maps.Marker({ map:map, position:path[0], title: "Start" });
+                new google.maps.Marker({ map:map, position:path[path.length-1], title: "End" });
+            }
+        }
+        if (window.google && google.maps) init(); else window.addEventListener("load", init);
+    })();
+    </script>
+}

@@ -1,0 +1,23 @@
+﻿@model TaxiRank.Models.ViewModels.TicketVM
+@{
+    ViewBag.Title = "Ticket " + Model.Pnr;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <div class="card shadow-sm mx-auto" style="max-width:720px">
+        <div class="card-body">
+            <h3 class="mb-1">Ticket @Model.Pnr</h3>
+            <div class="text-muted mb-3">@Model.Passenger</div>
+            <div class="row g-2">
+                <div class="col-md-6"><strong>Route:</strong> @Model.Route</div>
+                <div class="col-md-6"><strong>Date:</strong> @Model.DepartureDate.ToString("yyyy-MM-dd") @Model.Time</div>
+                <div class="col-md-6"><strong>Seats:</strong> @Model.Seats</div>
+                <div class="col-md-6"><strong>Fare:</strong> @Model.Fare.ToString("0.00")</div>
+                <div class="col-md-6"><strong>Total:</strong> @Model.Total.ToString("0.00")</div>
+            </div>
+            <hr />
+            <button class="btn btn-outline-dark" onclick="window.print()">Print</button>
+            <a class="btn btn-primary" href="@Url.Action("Today","Driver")">Done</a>
+        </div>
+    </div>
+</div>

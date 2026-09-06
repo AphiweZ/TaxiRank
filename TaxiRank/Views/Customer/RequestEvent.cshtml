@@ -1,0 +1,134 @@
+﻿@model TaxiRank.Models.ViewModels.EventRequestVM
+@{
+    ViewBag.Title = "Request Event Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var decSep = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+}
+<div class="container py-3">
+    <h3>Request Event Booking</h3>
+    @using (Html.BeginForm("RequestEvent", "Customer", FormMethod.Post, new { id = "evtForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                @Html.TextBoxFor(m => m.Date, new { @class = "form-control", type = "date", value = Model.Date.ToString("yyyy-MM-dd") })
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Taxis Needed</label>
+                @Html.TextBoxFor(m => m.TaxiCount, new { @class = "form-control", type = "number", min = "1" })
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.ReturnTrip, new { @class = "form-check-input" })
+                    <label class="form-check-label">Return Trip</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Event Type</label>
+                @Html.DropDownListFor(m => m.EventType, new SelectList(new[] { "School Trip", "Wedding", "Beach Trip", "Sport Event", "Funeral", "Corporate", "Other" }), "Select...", new { @class = "form-select" })
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Passengers</label>
+                @Html.TextBoxFor(m => m.Pax, new { @class = "form-control", type = "number", min = "1" })
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Pickup</label>
+                <input id="pickup" class="form-control" placeholder="Start typing address..." autocomplete="off" />
+                @Html.HiddenFor(m => m.PickupPlaceId, new { id = "PickupPlaceId" })
+                @Html.HiddenFor(m => m.PickupLat, new { id = "PickupLat" })
+                @Html.HiddenFor(m => m.PickupLng, new { id = "PickupLng" })
+            </div>
+            <div class="col-12">
+                <label class="form-label">Destination</label>
+                <input id="drop" class="form-control" placeholder="Start typing address..." autocomplete="off" />
+                @Html.HiddenFor(m => m.DropPlaceId, new { id = "DropPlaceId" })
+                @Html.HiddenFor(m => m.DropLat, new { id = "DropLat" })
+                @Html.HiddenFor(m => m.DropLng, new { id = "DropLng" })
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Notes</label>
+                @Html.TextAreaFor(m => m.Notes, 3, 40, new { @class = "form-control" })
+            </div>
+
+            <div class="col-12">
+                <div id="map" style="height:300px" class="border rounded"></div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Submit Request</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("MyEvents")">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&libraries=places"></script>
+<script>
+(function () {
+    var map, mk1, mk2, dirSvc, dirDisp;
+
+    function toServerDecimal(val){
+        if(val==null) return "";
+        var s=(""+val).trim().replace(",",".");
+        var n=parseFloat(s);
+        if(isNaN(n)) return "";
+        var fx=n.toFixed(6);
+        return ("@decSep" === ",") ? fx.replace(".", ",") : fx;
+    }
+
+    function setMarker(lat, lng, isPickup) {
+        var pos = { lat: lat, lng: lng };
+        if (isPickup) { if (!mk1) mk1 = new google.maps.Marker({ map: map, label: "A" }); mk1.setPosition(pos); }
+        else { if (!mk2) mk2 = new google.maps.Marker({ map: map, label: "B" }); mk2.setPosition(pos); }
+        map.setCenter(pos);
+        map.setZoom(12);
+        drawRoute();
+    }
+
+    function drawRoute() {
+        if (!(mk1 && mk2)) return;
+        dirSvc.route({ origin: mk1.getPosition(), destination: mk2.getPosition(), travelMode: google.maps.TravelMode.DRIVING }, function (res, st) {
+            if (st === google.maps.DirectionsStatus.OK) dirDisp.setDirections(res);
+        });
+    }
+
+    function hookAutocomplete(inputId, hiddenPid, hiddenLat, hiddenLng, isPickup) {
+        var input = document.getElementById(inputId);
+        var ac = new google.maps.places.Autocomplete(input, { fields: ["place_id", "geometry", "name", "formatted_address"] });
+        ac.addListener("place_changed", function () {
+            var p = ac.getPlace();
+            if (!p || !p.geometry) return;
+            document.getElementById(hiddenPid).value = (p.place_id || "").toString().substring(0,128);
+            var lat = p.geometry.location.lat(), lng = p.geometry.location.lng();
+            document.getElementById(hiddenLat).value = toServerDecimal(lat);
+            document.getElementById(hiddenLng).value = toServerDecimal(lng);
+            setMarker(lat, lng, isPickup);
+        });
+        return ac;
+    }
+
+    function beforeSubmit(e){
+        // Normalize numbers one last time for current culture
+        ["PickupLat","PickupLng","DropLat","DropLng"].forEach(function(id){
+            var el=document.getElementById(id);
+            if(el) el.value = toServerDecimal(el.value);
+        });
+    }
+
+    function init() {
+        var el = document.getElementById("map"); if (!el) return;
+        map = new google.maps.Map(el, { center: { lat: -28.5, lng: 24.7 }, zoom: 6 });
+        dirSvc = new google.maps.DirectionsService();
+        dirDisp = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
+        hookAutocomplete("pickup", "PickupPlaceId", "PickupLat", "PickupLng", true);
+        hookAutocomplete("drop",   "DropPlaceId",   "DropLat",   "DropLng",   false);
+        var form = document.getElementById("evtForm");
+        if(form) form.addEventListener("submit", beforeSubmit);
+    }
+
+    if (window.google && google.maps) init(); else window.addEventListener("load", init);
+})();
+</script>

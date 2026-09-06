@@ -1,0 +1,2819 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="TaxiRankDb3Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AlertRules">
+          <Key>
+            <PropertyRef Name="AlertRuleId" />
+          </Key>
+          <Property Name="AlertRuleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MinFillComplianceThreshold" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="LateDepartureMinutes" Type="int" Nullable="false" />
+          <Property Name="CashVarianceThreshold" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IncidentSpikeThreshold" Type="int" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Alerts">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Entity" Type="nvarchar" MaxLength="50" />
+          <Property Name="EntityId" Type="int" />
+          <Property Name="Severity" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="500" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="ResolvedAt" Type="datetime" />
+          <Property Name="ResolvedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Approvals">
+          <Key>
+            <PropertyRef Name="ApprovalId" />
+          </Key>
+          <Property Name="ApprovalId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Entity" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="Action" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RequestedBy" Type="int" Nullable="false" />
+          <Property Name="RequestedAt" Type="datetime" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="ApprovedBy" Type="int" />
+          <Property Name="ApprovedAt" Type="datetime" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Attachments">
+          <Key>
+            <PropertyRef Name="AttachmentId" />
+          </Key>
+          <Property Name="AttachmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Entity" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="FileData" Type="varbinary(max)" Nullable="false" />
+          <Property Name="UploadedBy" Type="int" />
+          <Property Name="UploadedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AuditLog">
+          <Key>
+            <PropertyRef Name="AuditLogId" />
+          </Key>
+          <Property Name="AuditLogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="Field" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="OldValue" Type="nvarchar" MaxLength="1000" />
+          <Property Name="NewValue" Type="nvarchar" MaxLength="1000" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bookings">
+          <Key>
+            <PropertyRef Name="BookingId" />
+          </Key>
+          <Property Name="BookingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="PassengerId" Type="int" Nullable="false" />
+          <Property Name="SeatsCount" Type="int" Nullable="false" />
+          <Property Name="FareEach" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PaymentMethod" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="12" Nullable="false" />
+          <Property Name="Pnr" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="QrBlob" Type="varbinary(max)" />
+          <Property Name="ExpiresAt" Type="datetime" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="ExtendedAmount" Type="decimal" Precision="37" Scale="4" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="BookingSeats">
+          <Key>
+            <PropertyRef Name="BookingSeatId" />
+          </Key>
+          <Property Name="BookingSeatId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BookingId" Type="int" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="SeatNo" Type="int" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="CashupBags">
+          <Key>
+            <PropertyRef Name="BagId" />
+          </Key>
+          <Property Name="BagId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="CountedAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CountedBy" Type="int" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CharterPassengers">
+          <Key>
+            <PropertyRef Name="CharterPassengerId" />
+          </Key>
+          <Property Name="CharterPassengerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CharterId" Type="int" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="30" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="CharterPayments">
+          <Key>
+            <PropertyRef Name="CharterPaymentId" />
+          </Key>
+          <Property Name="CharterPaymentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CharterId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PaidAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Charters">
+          <Key>
+            <PropertyRef Name="CharterId" />
+          </Key>
+          <Property Name="CharterId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Organizer" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Contact" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="PickupPlaceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="PickupLat" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="PickupLng" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="DropPlaceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="DropLat" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="DropLng" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Pax" Type="int" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="QuoteAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DepositPaid" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="TaxiCount" Type="int" Nullable="false" />
+          <Property Name="ReturnTrip" Type="bit" Nullable="false" />
+          <Property Name="EventType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ApprovedBy" Type="int" />
+          <Property Name="ApprovedAt" Type="datetime" />
+          <Property Name="IsPaid" Type="bit" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="CharterVehicles">
+          <Key>
+            <PropertyRef Name="CharterVehicleId" />
+          </Key>
+          <Property Name="CharterVehicleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CharterId" Type="int" Nullable="false" />
+          <Property Name="VehicleId" Type="int" Nullable="false" />
+          <Property Name="DriverId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Departures">
+          <Key>
+            <PropertyRef Name="DepartureId" />
+          </Key>
+          <Property Name="DepartureId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteId" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="PlannedTime" Type="time" Precision="0" Nullable="false" />
+          <Property Name="VehicleId" Type="int" Nullable="false" />
+          <Property Name="DriverId" Type="int" Nullable="false" />
+          <Property Name="MinFill" Type="int" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="ReadyChecklist_MinFill" Type="bit" Nullable="false" />
+          <Property Name="ReadyChecklist_CashVerified" Type="bit" Nullable="false" />
+          <Property Name="ReadyChecklist_FloatIssued" Type="bit" Nullable="false" />
+          <Property Name="ReadyChecklist_VehicleCleared" Type="bit" Nullable="false" />
+          <Property Name="ManagerOverrideReady" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="DriverAssignments">
+          <Key>
+            <PropertyRef Name="AssignmentId" />
+          </Key>
+          <Property Name="AssignmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverId" Type="int" Nullable="false" />
+          <Property Name="VehicleId" Type="int" Nullable="false" />
+          <Property Name="StartDate" Type="date" Nullable="false" />
+          <Property Name="EndDate" Type="date" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Expenses">
+          <Key>
+            <PropertyRef Name="ExpenseId" />
+          </Key>
+          <Property Name="ExpenseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ProofAttachmentId" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="FareRules">
+          <Key>
+            <PropertyRef Name="FareRuleId" />
+          </Key>
+          <Property Name="FareRuleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteId" Type="int" Nullable="false" />
+          <Property Name="RuleType" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="StartDate" Type="date" />
+          <Property Name="EndDate" Type="date" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Floats">
+          <Key>
+            <PropertyRef Name="FloatId" />
+          </Key>
+          <Property Name="FloatId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="AmountIssued" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Purpose" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="IssuedBy" Type="int" Nullable="false" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Incidents">
+          <Key>
+            <PropertyRef Name="IncidentId" />
+          </Key>
+          <Property Name="IncidentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="1000" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="MapsCache">
+          <Key>
+            <PropertyRef Name="MapsCacheId" />
+          </Key>
+          <Property Name="MapsCacheId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlaceId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="Latitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Json" Type="nvarchar(max)" />
+          <Property Name="CachedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OwnerConfigs">
+          <Key>
+            <PropertyRef Name="OwnerConfigId" />
+          </Key>
+          <Property Name="OwnerConfigId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="DriverSharePercent" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="EffectiveFrom" Type="datetime" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="ManagerSharePercent" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Passengers">
+          <Key>
+            <PropertyRef Name="PassengerId" />
+          </Key>
+          <Property Name="PassengerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="NextOfKinName" Type="nvarchar" MaxLength="25" />
+          <Property Name="NextOfKinPhone" Type="nvarchar" MaxLength="15" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Payments">
+          <Key>
+            <PropertyRef Name="PaymentId" />
+          </Key>
+          <Property Name="PaymentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BookingId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Method" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Reference" Type="nvarchar" MaxLength="100" />
+          <Property Name="PaidAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Ranks">
+          <Key>
+            <PropertyRef Name="RankId" />
+          </Key>
+          <Property Name="RankId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Province" Type="nvarchar" MaxLength="150" />
+          <Property Name="Latitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="PlaceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="ReportingArchive">
+          <Key>
+            <PropertyRef Name="ArchiveId" />
+          </Key>
+          <Property Name="ArchiveId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PeriodMonth" Type="char" MaxLength="7" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="FileData" Type="varbinary(max)" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="RouteId" />
+          </Key>
+          <Property Name="RouteId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FromRankId" Type="int" Nullable="false" />
+          <Property Name="ToName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="ToPlaceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ToLatitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="ToLongitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="DefaultFare" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DistanceKm" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="RouteWaypoints">
+          <Key>
+            <PropertyRef Name="RouteWaypointId" />
+          </Key>
+          <Property Name="RouteWaypointId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RouteId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="PlaceId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Latitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="decimal" Precision="9" Scale="6" />
+          <Property Name="Sequence" Type="int" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="SeatInventory">
+          <Key>
+            <PropertyRef Name="SeatInventoryId" />
+          </Key>
+          <Property Name="SeatInventoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="SeatNo" Type="int" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="BookingId" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Settlements">
+          <Key>
+            <PropertyRef Name="SettlementId" />
+          </Key>
+          <Property Name="SettlementId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="PeriodDay" Type="date" Nullable="false" />
+          <Property Name="Gross" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Expenses" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DriverShare" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="NetToOwner" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="ManagerShare" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Telemetry">
+          <Key>
+            <PropertyRef Name="TelemetryId" />
+          </Key>
+          <Property Name="TelemetryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="Latitude" Type="decimal" Precision="9" Scale="6" Nullable="false" />
+          <Property Name="Longitude" Type="decimal" Precision="9" Scale="6" Nullable="false" />
+          <Property Name="SpeedKph" Type="decimal" Precision="5" Scale="2" />
+          <Property Name="Battery" Type="int" />
+          <Property Name="Timestamp" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserRanks">
+          <Key>
+            <PropertyRef Name="UserRankId" />
+          </Key>
+          <Property Name="UserRankId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RankId" Type="int" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="15" />
+          <Property Name="Email" Type="nvarchar" MaxLength="250" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="VehicleDocuments">
+          <Key>
+            <PropertyRef Name="VehicleDocumentId" />
+          </Key>
+          <Property Name="VehicleDocumentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VehicleId" Type="int" Nullable="false" />
+          <Property Name="DocType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="FileData" Type="varbinary(max)" Nullable="false" />
+          <Property Name="UploadedBy" Type="int" />
+          <Property Name="UploadedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Vehicles">
+          <Key>
+            <PropertyRef Name="VehicleId" />
+          </Key>
+          <Property Name="VehicleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Make" Type="nvarchar" MaxLength="100" />
+          <Property Name="Model" Type="nvarchar" MaxLength="100" />
+          <Property Name="Year" Type="int" />
+          <Property Name="Seats" Type="int" Nullable="false" />
+          <Property Name="OwnerId" Type="int" Nullable="false" />
+          <Property Name="HomeRankId" Type="int" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="WaypointChecks">
+          <Key>
+            <PropertyRef Name="WaypointCheckId" />
+          </Key>
+          <Property Name="WaypointCheckId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureId" Type="int" Nullable="false" />
+          <Property Name="RouteWaypointId" Type="int" Nullable="false" />
+          <Property Name="ReachedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Bookings_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Bookings_Passenger">
+          <End Role="Passengers" Type="Self.Passengers" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Passengers">
+              <PropertyRef Name="PassengerId" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="PassengerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BookingSeats_Booking">
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="1" />
+          <End Role="BookingSeats" Type="Self.BookingSeats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="BookingSeats">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CashupBags_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="CashupBags" Type="Self.CashupBags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="CashupBags">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CashupBags_User">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="CashupBags" Type="Self.CashupBags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CashupBags">
+              <PropertyRef Name="CountedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterPassengers_Charter">
+          <End Role="Charters" Type="Self.Charters" Multiplicity="1" />
+          <End Role="CharterPassengers" Type="Self.CharterPassengers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterPassengers">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterPayments_Charter">
+          <End Role="Charters" Type="Self.Charters" Multiplicity="1" />
+          <End Role="CharterPayments" Type="Self.CharterPayments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterPayments">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Charters_ApprovedBy">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Charters" Type="Self.Charters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Charters">
+              <PropertyRef Name="ApprovedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Charters_Customer">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Charters" Type="Self.Charters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Charters">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Charter">
+          <End Role="Charters" Type="Self.Charters" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Driver">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Driver">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departures" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Route">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departures" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departures" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DriverAssignments_Driver">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="DriverAssignments" Type="Self.DriverAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="DriverAssignments">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DriverAssignments_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="1" />
+          <End Role="DriverAssignments" Type="Self.DriverAssignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="DriverAssignments">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Expenses_Attachment">
+          <End Role="Attachments" Type="Self.Attachments" Multiplicity="0..1" />
+          <End Role="Expenses" Type="Self.Expenses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Attachments">
+              <PropertyRef Name="AttachmentId" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="ProofAttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Expenses_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="Expenses" Type="Self.Expenses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FareRules_Route">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="FareRules" Type="Self.FareRules" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="FareRules">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Floats_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="Floats" Type="Self.Floats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Floats">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Floats_User">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Floats" Type="Self.Floats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Floats">
+              <PropertyRef Name="IssuedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Incidents_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="Incidents" Type="Self.Incidents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Incidents">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OwnerConfigs_Owner">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="OwnerConfigs" Type="Self.OwnerConfigs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="OwnerConfigs">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payments_Booking">
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="1" />
+          <End Role="Payments" Type="Self.Payments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="Payments">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Routes_FromRank">
+          <End Role="Ranks" Type="Self.Ranks" Multiplicity="1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="FromRankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteWaypoints_Route">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RouteWaypoints" Type="Self.RouteWaypoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="RouteWaypoints">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SeatInventory_Booking">
+          <End Role="Bookings" Type="Self.Bookings" Multiplicity="0..1" />
+          <End Role="SeatInventory" Type="Self.SeatInventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="SeatInventory">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SeatInventory_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="SeatInventory" Type="Self.SeatInventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="SeatInventory">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Settlements_Owner">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Settlements" Type="Self.Settlements" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Settlements">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Telemetry_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="Telemetry" Type="Self.Telemetry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Telemetry">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRanks_Rank">
+          <End Role="Ranks" Type="Self.Ranks" Multiplicity="1" />
+          <End Role="UserRanks" Type="Self.UserRanks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="UserRanks">
+              <PropertyRef Name="RankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRanks_User">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserRanks" Type="Self.UserRanks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRanks">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VehicleDocuments_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="1" />
+          <End Role="VehicleDocuments" Type="Self.VehicleDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="VehicleDocuments">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vehicles_HomeRank">
+          <End Role="Ranks" Type="Self.Ranks" Multiplicity="0..1" />
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="Vehicles">
+              <PropertyRef Name="HomeRankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vehicles_Owner">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Vehicles" Type="Self.Vehicles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Vehicles">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WaypointChecks_Departure">
+          <End Role="Departures" Type="Self.Departures" Multiplicity="1" />
+          <End Role="WaypointChecks" Type="Self.WaypointChecks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="WaypointChecks">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WaypointChecks_Waypoint">
+          <End Role="RouteWaypoints" Type="Self.RouteWaypoints" Multiplicity="1" />
+          <End Role="WaypointChecks" Type="Self.WaypointChecks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RouteWaypoints">
+              <PropertyRef Name="RouteWaypointId" />
+            </Principal>
+            <Dependent Role="WaypointChecks">
+              <PropertyRef Name="RouteWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TaxiRankDb3ModelStoreContainer">
+          <EntitySet Name="AlertRules" EntityType="Self.AlertRules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Alerts" EntityType="Self.Alerts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Approvals" EntityType="Self.Approvals" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Attachments" EntityType="Self.Attachments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AuditLog" EntityType="Self.AuditLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bookings" EntityType="Self.Bookings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BookingSeats" EntityType="Self.BookingSeats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CashupBags" EntityType="Self.CashupBags" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CharterPassengers" EntityType="Self.CharterPassengers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CharterPayments" EntityType="Self.CharterPayments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Charters" EntityType="Self.Charters" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CharterVehicles" EntityType="Self.CharterVehicles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Departures" EntityType="Self.Departures" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DriverAssignments" EntityType="Self.DriverAssignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FareRules" EntityType="Self.FareRules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Floats" EntityType="Self.Floats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Incidents" EntityType="Self.Incidents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MapsCache" EntityType="Self.MapsCache" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OwnerConfigs" EntityType="Self.OwnerConfigs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Passengers" EntityType="Self.Passengers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ranks" EntityType="Self.Ranks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportingArchive" EntityType="Self.ReportingArchive" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Routes" EntityType="Self.Routes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RouteWaypoints" EntityType="Self.RouteWaypoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SeatInventory" EntityType="Self.SeatInventory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Settlements" EntityType="Self.Settlements" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Telemetry" EntityType="Self.Telemetry" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRanks" EntityType="Self.UserRanks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VehicleDocuments" EntityType="Self.VehicleDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vehicles" EntityType="Self.Vehicles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WaypointChecks" EntityType="Self.WaypointChecks" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Bookings_Departure" Association="Self.FK_Bookings_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Bookings_Passenger" Association="Self.FK_Bookings_Passenger">
+            <End Role="Passengers" EntitySet="Passengers" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BookingSeats_Booking" Association="Self.FK_BookingSeats_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="BookingSeats" EntitySet="BookingSeats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CashupBags_Departure" Association="Self.FK_CashupBags_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="CashupBags" EntitySet="CashupBags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CashupBags_User" Association="Self.FK_CashupBags_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CashupBags" EntitySet="CashupBags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterPassengers_Charter" Association="Self.FK_CharterPassengers_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterPassengers" EntitySet="CharterPassengers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterPayments_Charter" Association="Self.FK_CharterPayments_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterPayments" EntitySet="CharterPayments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Charters_ApprovedBy" Association="Self.FK_Charters_ApprovedBy">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Charters" EntitySet="Charters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Charters_Customer" Association="Self.FK_Charters_Customer">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Charters" EntitySet="Charters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Charter" Association="Self.FK_CharterVehicles_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Driver" Association="Self.FK_CharterVehicles_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Vehicle" Association="Self.FK_CharterVehicles_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Driver" Association="Self.FK_Departures_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Route" Association="Self.FK_Departures_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Vehicle" Association="Self.FK_Departures_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DriverAssignments_Driver" Association="Self.FK_DriverAssignments_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="DriverAssignments" EntitySet="DriverAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DriverAssignments_Vehicle" Association="Self.FK_DriverAssignments_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="DriverAssignments" EntitySet="DriverAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Expenses_Attachment" Association="Self.FK_Expenses_Attachment">
+            <End Role="Attachments" EntitySet="Attachments" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Expenses_Departure" Association="Self.FK_Expenses_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FareRules_Route" Association="Self.FK_FareRules_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="FareRules" EntitySet="FareRules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Floats_Departure" Association="Self.FK_Floats_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Floats" EntitySet="Floats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Floats_User" Association="Self.FK_Floats_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Floats" EntitySet="Floats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Incidents_Departure" Association="Self.FK_Incidents_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Incidents" EntitySet="Incidents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OwnerConfigs_Owner" Association="Self.FK_OwnerConfigs_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="OwnerConfigs" EntitySet="OwnerConfigs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payments_Booking" Association="Self.FK_Payments_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="Payments" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Routes_FromRank" Association="Self.FK_Routes_FromRank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteWaypoints_Route" Association="Self.FK_RouteWaypoints_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteWaypoints" EntitySet="RouteWaypoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SeatInventory_Booking" Association="Self.FK_SeatInventory_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="SeatInventory" EntitySet="SeatInventory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SeatInventory_Departure" Association="Self.FK_SeatInventory_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="SeatInventory" EntitySet="SeatInventory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Settlements_Owner" Association="Self.FK_Settlements_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Settlements" EntitySet="Settlements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Telemetry_Departure" Association="Self.FK_Telemetry_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Telemetry" EntitySet="Telemetry" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRanks_Rank" Association="Self.FK_UserRanks_Rank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="UserRanks" EntitySet="UserRanks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRanks_User" Association="Self.FK_UserRanks_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRanks" EntitySet="UserRanks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VehicleDocuments_Vehicle" Association="Self.FK_VehicleDocuments_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="VehicleDocuments" EntitySet="VehicleDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vehicles_HomeRank" Association="Self.FK_Vehicles_HomeRank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="Vehicles" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vehicles_Owner" Association="Self.FK_Vehicles_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Vehicles" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WaypointChecks_Departure" Association="Self.FK_WaypointChecks_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="WaypointChecks" EntitySet="WaypointChecks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WaypointChecks_Waypoint" Association="Self.FK_WaypointChecks_Waypoint">
+            <End Role="RouteWaypoints" EntitySet="RouteWaypoints" />
+            <End Role="WaypointChecks" EntitySet="WaypointChecks" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TaxiRankDb3Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AlertRule">
+          <Key>
+            <PropertyRef Name="AlertRuleId" />
+          </Key>
+          <Property Name="AlertRuleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MinFillComplianceThreshold" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="LateDepartureMinutes" Type="Int32" Nullable="false" />
+          <Property Name="CashVarianceThreshold" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IncidentSpikeThreshold" Type="Int32" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Alert">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Entity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EntityId" Type="Int32" />
+          <Property Name="Severity" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ResolvedAt" Type="DateTime" Precision="3" />
+          <Property Name="ResolvedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Approval">
+          <Key>
+            <PropertyRef Name="ApprovalId" />
+          </Key>
+          <Property Name="ApprovalId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Entity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RequestedBy" Type="Int32" Nullable="false" />
+          <Property Name="RequestedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ApprovedBy" Type="Int32" />
+          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
+          <Property Name="Notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Attachment">
+          <Key>
+            <PropertyRef Name="AttachmentId" />
+          </Key>
+          <Property Name="AttachmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Entity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="FileName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FileData" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="UploadedBy" Type="Int32" />
+          <Property Name="UploadedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Expenses" Relationship="Self.FK_Expenses_Attachment" FromRole="Attachments" ToRole="Expenses" />
+        </EntityType>
+        <EntityType Name="AuditLog">
+          <Key>
+            <PropertyRef Name="AuditLogId" />
+          </Key>
+          <Property Name="AuditLogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EntityType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="Field" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OldValue" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="NewValue" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Booking">
+          <Key>
+            <PropertyRef Name="BookingId" />
+          </Key>
+          <Property Name="BookingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="PassengerId" Type="Int32" Nullable="false" />
+          <Property Name="SeatsCount" Type="Int32" Nullable="false" />
+          <Property Name="FareEach" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PaymentMethod" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="12" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Pnr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QrBlob" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="ExpiresAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="ExtendedAmount" Type="Decimal" Precision="37" Scale="4" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_Bookings_Departure" FromRole="Bookings" ToRole="Departures" />
+          <NavigationProperty Name="Passenger" Relationship="Self.FK_Bookings_Passenger" FromRole="Bookings" ToRole="Passengers" />
+          <NavigationProperty Name="BookingSeats" Relationship="Self.FK_BookingSeats_Booking" FromRole="Bookings" ToRole="BookingSeats" />
+          <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Booking" FromRole="Bookings" ToRole="Payments" />
+          <NavigationProperty Name="SeatInventories" Relationship="Self.FK_SeatInventory_Booking" FromRole="Bookings" ToRole="SeatInventory" />
+        </EntityType>
+        <EntityType Name="BookingSeat">
+          <Key>
+            <PropertyRef Name="BookingSeatId" />
+          </Key>
+          <Property Name="BookingSeatId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BookingId" Type="Int32" Nullable="false" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="SeatNo" Type="Int32" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Booking" Relationship="Self.FK_BookingSeats_Booking" FromRole="BookingSeats" ToRole="Bookings" />
+        </EntityType>
+        <EntityType Name="CashupBag">
+          <Key>
+            <PropertyRef Name="BagId" />
+          </Key>
+          <Property Name="BagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="CountedAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CountedBy" Type="Int32" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_CashupBags_Departure" FromRole="CashupBags" ToRole="Departures" />
+          <NavigationProperty Name="User" Relationship="Self.FK_CashupBags_User" FromRole="CashupBags" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="CharterPassenger">
+          <Key>
+            <PropertyRef Name="CharterPassengerId" />
+          </Key>
+          <Property Name="CharterPassengerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CharterId" Type="Int32" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Charter" Relationship="Self.FK_CharterPassengers_Charter" FromRole="CharterPassengers" ToRole="Charters" />
+        </EntityType>
+        <EntityType Name="CharterPayment">
+          <Key>
+            <PropertyRef Name="CharterPaymentId" />
+          </Key>
+          <Property Name="CharterPaymentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CharterId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PaidAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Charter" Relationship="Self.FK_CharterPayments_Charter" FromRole="CharterPayments" ToRole="Charters" />
+        </EntityType>
+        <EntityType Name="Charter">
+          <Key>
+            <PropertyRef Name="CharterId" />
+          </Key>
+          <Property Name="CharterId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Organizer" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Contact" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="PickupPlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PickupLat" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="PickupLng" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="DropPlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="DropLat" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="DropLng" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Pax" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QuoteAmount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DepositPaid" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="TaxiCount" Type="Int32" Nullable="false" />
+          <Property Name="ReturnTrip" Type="Boolean" Nullable="false" />
+          <Property Name="EventType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedBy" Type="Int32" />
+          <Property Name="ApprovedAt" Type="DateTime" Precision="3" />
+          <Property Name="IsPaid" Type="Boolean" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CharterPassengers" Relationship="Self.FK_CharterPassengers_Charter" FromRole="Charters" ToRole="CharterPassengers" />
+          <NavigationProperty Name="CharterPayments" Relationship="Self.FK_CharterPayments_Charter" FromRole="Charters" ToRole="CharterPayments" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Charters_ApprovedBy" FromRole="Charters" ToRole="Users" />
+          <NavigationProperty Name="User1" Relationship="Self.FK_Charters_Customer" FromRole="Charters" ToRole="Users" />
+          <NavigationProperty Name="CharterVehicles" Relationship="Self.FK_CharterVehicles_Charter" FromRole="Charters" ToRole="CharterVehicles" />
+        </EntityType>
+        <EntityType Name="CharterVehicle">
+          <Key>
+            <PropertyRef Name="CharterVehicleId" />
+          </Key>
+          <Property Name="CharterVehicleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CharterId" Type="Int32" Nullable="false" />
+          <Property Name="VehicleId" Type="Int32" Nullable="false" />
+          <Property Name="DriverId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Charter" Relationship="Self.FK_CharterVehicles_Charter" FromRole="CharterVehicles" ToRole="Charters" />
+          <NavigationProperty Name="User" Relationship="Self.FK_CharterVehicles_Driver" FromRole="CharterVehicles" ToRole="Users" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_CharterVehicles_Vehicle" FromRole="CharterVehicles" ToRole="Vehicles" />
+        </EntityType>
+        <EntityType Name="Departure">
+          <Key>
+            <PropertyRef Name="DepartureId" />
+          </Key>
+          <Property Name="DepartureId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteId" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="PlannedTime" Type="Time" Nullable="false" Precision="0" />
+          <Property Name="VehicleId" Type="Int32" Nullable="false" />
+          <Property Name="DriverId" Type="Int32" Nullable="false" />
+          <Property Name="MinFill" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ReadyChecklist_MinFill" Type="Boolean" Nullable="false" />
+          <Property Name="ReadyChecklist_CashVerified" Type="Boolean" Nullable="false" />
+          <Property Name="ReadyChecklist_FloatIssued" Type="Boolean" Nullable="false" />
+          <Property Name="ReadyChecklist_VehicleCleared" Type="Boolean" Nullable="false" />
+          <Property Name="ManagerOverrideReady" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK_Bookings_Departure" FromRole="Departures" ToRole="Bookings" />
+          <NavigationProperty Name="CashupBags" Relationship="Self.FK_CashupBags_Departure" FromRole="Departures" ToRole="CashupBags" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Departures_Driver" FromRole="Departures" ToRole="Users" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_Departures_Route" FromRole="Departures" ToRole="Routes" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_Departures_Vehicle" FromRole="Departures" ToRole="Vehicles" />
+          <NavigationProperty Name="Expenses" Relationship="Self.FK_Expenses_Departure" FromRole="Departures" ToRole="Expenses" />
+          <NavigationProperty Name="Floats" Relationship="Self.FK_Floats_Departure" FromRole="Departures" ToRole="Floats" />
+          <NavigationProperty Name="Incidents" Relationship="Self.FK_Incidents_Departure" FromRole="Departures" ToRole="Incidents" />
+          <NavigationProperty Name="SeatInventories" Relationship="Self.FK_SeatInventory_Departure" FromRole="Departures" ToRole="SeatInventory" />
+          <NavigationProperty Name="Telemetries" Relationship="Self.FK_Telemetry_Departure" FromRole="Departures" ToRole="Telemetry" />
+          <NavigationProperty Name="WaypointChecks" Relationship="Self.FK_WaypointChecks_Departure" FromRole="Departures" ToRole="WaypointChecks" />
+        </EntityType>
+        <EntityType Name="DriverAssignment">
+          <Key>
+            <PropertyRef Name="AssignmentId" />
+          </Key>
+          <Property Name="AssignmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverId" Type="Int32" Nullable="false" />
+          <Property Name="VehicleId" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Precision="0" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="User" Relationship="Self.FK_DriverAssignments_Driver" FromRole="DriverAssignments" ToRole="Users" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_DriverAssignments_Vehicle" FromRole="DriverAssignments" ToRole="Vehicles" />
+        </EntityType>
+        <EntityType Name="Expens">
+          <Key>
+            <PropertyRef Name="ExpenseId" />
+          </Key>
+          <Property Name="ExpenseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="ProofAttachmentId" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Attachment" Relationship="Self.FK_Expenses_Attachment" FromRole="Expenses" ToRole="Attachments" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_Expenses_Departure" FromRole="Expenses" ToRole="Departures" />
+        </EntityType>
+        <EntityType Name="FareRule">
+          <Key>
+            <PropertyRef Name="FareRuleId" />
+          </Key>
+          <Property Name="FareRuleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteId" Type="Int32" Nullable="false" />
+          <Property Name="RuleType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Precision="0" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_FareRules_Route" FromRole="FareRules" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Float">
+          <Key>
+            <PropertyRef Name="FloatId" />
+          </Key>
+          <Property Name="FloatId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="AmountIssued" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Purpose" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IssuedBy" Type="Int32" Nullable="false" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_Floats_Departure" FromRole="Floats" ToRole="Departures" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Floats_User" FromRole="Floats" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Incident">
+          <Key>
+            <PropertyRef Name="IncidentId" />
+          </Key>
+          <Property Name="IncidentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Notes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_Incidents_Departure" FromRole="Incidents" ToRole="Departures" />
+        </EntityType>
+        <EntityType Name="MapsCache">
+          <Key>
+            <PropertyRef Name="MapsCacheId" />
+          </Key>
+          <Property Name="MapsCacheId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Latitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Json" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CachedAt" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="OwnerConfig">
+          <Key>
+            <PropertyRef Name="OwnerConfigId" />
+          </Key>
+          <Property Name="OwnerConfigId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OwnerId" Type="Int32" Nullable="false" />
+          <Property Name="DriverSharePercent" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="EffectiveFrom" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="User" Relationship="Self.FK_OwnerConfigs_Owner" FromRole="OwnerConfigs" ToRole="Users" />
+          <Property Name="ManagerSharePercent" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+        </EntityType>
+        <EntityType Name="Passenger">
+          <Key>
+            <PropertyRef Name="PassengerId" />
+          </Key>
+          <Property Name="PassengerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FullName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NextOfKinName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="NextOfKinPhone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Bookings" Relationship="Self.FK_Bookings_Passenger" FromRole="Passengers" ToRole="Bookings" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="PaymentId" />
+          </Key>
+          <Property Name="PaymentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BookingId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Method" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Reference" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PaidAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Booking" Relationship="Self.FK_Payments_Booking" FromRole="Payments" ToRole="Bookings" />
+        </EntityType>
+        <EntityType Name="Rank">
+          <Key>
+            <PropertyRef Name="RankId" />
+          </Key>
+          <Property Name="RankId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Province" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Latitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="PlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK_Routes_FromRank" FromRole="Ranks" ToRole="Routes" />
+          <NavigationProperty Name="UserRanks" Relationship="Self.FK_UserRanks_Rank" FromRole="Ranks" ToRole="UserRanks" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK_Vehicles_HomeRank" FromRole="Ranks" ToRole="Vehicles" />
+        </EntityType>
+        <EntityType Name="ReportingArchive">
+          <Key>
+            <PropertyRef Name="ArchiveId" />
+          </Key>
+          <Property Name="ArchiveId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PeriodMonth" Type="String" MaxLength="7" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="FileName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FileData" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="RouteId" />
+          </Key>
+          <Property Name="RouteId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FromRankId" Type="Int32" Nullable="false" />
+          <Property Name="ToName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ToPlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ToLatitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="ToLongitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="DefaultFare" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DistanceKm" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="Departures" Relationship="Self.FK_Departures_Route" FromRole="Routes" ToRole="Departures" />
+          <NavigationProperty Name="FareRules" Relationship="Self.FK_FareRules_Route" FromRole="Routes" ToRole="FareRules" />
+          <NavigationProperty Name="Rank" Relationship="Self.FK_Routes_FromRank" FromRole="Routes" ToRole="Ranks" />
+          <NavigationProperty Name="RouteWaypoints" Relationship="Self.FK_RouteWaypoints_Route" FromRole="Routes" ToRole="RouteWaypoints" />
+        </EntityType>
+        <EntityType Name="RouteWaypoint">
+          <Key>
+            <PropertyRef Name="RouteWaypointId" />
+          </Key>
+          <Property Name="RouteWaypointId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RouteId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PlaceId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Latitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Longitude" Type="Decimal" Precision="9" Scale="6" />
+          <Property Name="Sequence" Type="Int32" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_RouteWaypoints_Route" FromRole="RouteWaypoints" ToRole="Routes" />
+          <NavigationProperty Name="WaypointChecks" Relationship="Self.FK_WaypointChecks_Waypoint" FromRole="RouteWaypoints" ToRole="WaypointChecks" />
+        </EntityType>
+        <EntityType Name="SeatInventory">
+          <Key>
+            <PropertyRef Name="SeatInventoryId" />
+          </Key>
+          <Property Name="SeatInventoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="SeatNo" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BookingId" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Booking" Relationship="Self.FK_SeatInventory_Booking" FromRole="SeatInventory" ToRole="Bookings" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_SeatInventory_Departure" FromRole="SeatInventory" ToRole="Departures" />
+        </EntityType>
+        <EntityType Name="Settlement">
+          <Key>
+            <PropertyRef Name="SettlementId" />
+          </Key>
+          <Property Name="SettlementId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OwnerId" Type="Int32" Nullable="false" />
+          <Property Name="PeriodDay" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Gross" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Expenses" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DriverShare" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="NetToOwner" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Settlements_Owner" FromRole="Settlements" ToRole="Users" />
+          <Property Name="ManagerShare" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="Telemetry">
+          <Key>
+            <PropertyRef Name="TelemetryId" />
+          </Key>
+          <Property Name="TelemetryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="Latitude" Type="Decimal" Precision="9" Scale="6" Nullable="false" />
+          <Property Name="Longitude" Type="Decimal" Precision="9" Scale="6" Nullable="false" />
+          <Property Name="SpeedKph" Type="Decimal" Precision="5" Scale="2" />
+          <Property Name="Battery" Type="Int32" />
+          <Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_Telemetry_Departure" FromRole="Telemetry" ToRole="Departures" />
+        </EntityType>
+        <EntityType Name="UserRank">
+          <Key>
+            <PropertyRef Name="UserRankId" />
+          </Key>
+          <Property Name="UserRankId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="RankId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="Rank" Relationship="Self.FK_UserRanks_Rank" FromRole="UserRanks" ToRole="Ranks" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserRanks_User" FromRole="UserRanks" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DisplayName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="CashupBags" Relationship="Self.FK_CashupBags_User" FromRole="Users" ToRole="CashupBags" />
+          <NavigationProperty Name="Charters" Relationship="Self.FK_Charters_ApprovedBy" FromRole="Users" ToRole="Charters" />
+          <NavigationProperty Name="Charters1" Relationship="Self.FK_Charters_Customer" FromRole="Users" ToRole="Charters" />
+          <NavigationProperty Name="CharterVehicles" Relationship="Self.FK_CharterVehicles_Driver" FromRole="Users" ToRole="CharterVehicles" />
+          <NavigationProperty Name="Departures" Relationship="Self.FK_Departures_Driver" FromRole="Users" ToRole="Departures" />
+          <NavigationProperty Name="DriverAssignments" Relationship="Self.FK_DriverAssignments_Driver" FromRole="Users" ToRole="DriverAssignments" />
+          <NavigationProperty Name="Floats" Relationship="Self.FK_Floats_User" FromRole="Users" ToRole="Floats" />
+          <NavigationProperty Name="OwnerConfigs" Relationship="Self.FK_OwnerConfigs_Owner" FromRole="Users" ToRole="OwnerConfigs" />
+          <NavigationProperty Name="Settlements" Relationship="Self.FK_Settlements_Owner" FromRole="Users" ToRole="Settlements" />
+          <NavigationProperty Name="UserRanks" Relationship="Self.FK_UserRanks_User" FromRole="Users" ToRole="UserRanks" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK_Vehicles_Owner" FromRole="Users" ToRole="Vehicles" />
+        </EntityType>
+        <EntityType Name="VehicleDocument">
+          <Key>
+            <PropertyRef Name="VehicleDocumentId" />
+          </Key>
+          <Property Name="VehicleDocumentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VehicleId" Type="Int32" Nullable="false" />
+          <Property Name="DocType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FileName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FileData" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="UploadedBy" Type="Int32" />
+          <Property Name="UploadedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_VehicleDocuments_Vehicle" FromRole="VehicleDocuments" ToRole="Vehicles" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="VehicleId" />
+          </Key>
+          <Property Name="VehicleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Make" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="Seats" Type="Int32" Nullable="false" />
+          <Property Name="OwnerId" Type="Int32" Nullable="false" />
+          <Property Name="HomeRankId" Type="Int32" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="Int32" />
+          <NavigationProperty Name="CharterVehicles" Relationship="Self.FK_CharterVehicles_Vehicle" FromRole="Vehicles" ToRole="CharterVehicles" />
+          <NavigationProperty Name="Departures" Relationship="Self.FK_Departures_Vehicle" FromRole="Vehicles" ToRole="Departures" />
+          <NavigationProperty Name="DriverAssignments" Relationship="Self.FK_DriverAssignments_Vehicle" FromRole="Vehicles" ToRole="DriverAssignments" />
+          <NavigationProperty Name="Rank" Relationship="Self.FK_Vehicles_HomeRank" FromRole="Vehicles" ToRole="Ranks" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Vehicles_Owner" FromRole="Vehicles" ToRole="Users" />
+          <NavigationProperty Name="VehicleDocuments" Relationship="Self.FK_VehicleDocuments_Vehicle" FromRole="Vehicles" ToRole="VehicleDocuments" />
+        </EntityType>
+        <EntityType Name="WaypointCheck">
+          <Key>
+            <PropertyRef Name="WaypointCheckId" />
+          </Key>
+          <Property Name="WaypointCheckId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureId" Type="Int32" Nullable="false" />
+          <Property Name="RouteWaypointId" Type="Int32" Nullable="false" />
+          <Property Name="ReachedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Departure" Relationship="Self.FK_WaypointChecks_Departure" FromRole="WaypointChecks" ToRole="Departures" />
+          <NavigationProperty Name="RouteWaypoint" Relationship="Self.FK_WaypointChecks_Waypoint" FromRole="WaypointChecks" ToRole="RouteWaypoints" />
+        </EntityType>
+        <Association Name="FK_Expenses_Attachment">
+          <End Role="Attachments" Type="Self.Attachment" Multiplicity="0..1" />
+          <End Role="Expenses" Type="Self.Expens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Attachments">
+              <PropertyRef Name="AttachmentId" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="ProofAttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Bookings_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Bookings_Passenger">
+          <End Role="Passengers" Type="Self.Passenger" Multiplicity="1" />
+          <End Role="Bookings" Type="Self.Booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Passengers">
+              <PropertyRef Name="PassengerId" />
+            </Principal>
+            <Dependent Role="Bookings">
+              <PropertyRef Name="PassengerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BookingSeats_Booking">
+          <End Role="Bookings" Type="Self.Booking" Multiplicity="1" />
+          <End Role="BookingSeats" Type="Self.BookingSeat" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="BookingSeats">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payments_Booking">
+          <End Role="Bookings" Type="Self.Booking" Multiplicity="1" />
+          <End Role="Payments" Type="Self.Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="Payments">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SeatInventory_Booking">
+          <End Role="Bookings" Type="Self.Booking" Multiplicity="0..1" />
+          <End Role="SeatInventory" Type="Self.SeatInventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bookings">
+              <PropertyRef Name="BookingId" />
+            </Principal>
+            <Dependent Role="SeatInventory">
+              <PropertyRef Name="BookingId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CashupBags_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="CashupBags" Type="Self.CashupBag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="CashupBags">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CashupBags_User">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="CashupBags" Type="Self.CashupBag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CashupBags">
+              <PropertyRef Name="CountedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterPassengers_Charter">
+          <End Role="Charters" Type="Self.Charter" Multiplicity="1" />
+          <End Role="CharterPassengers" Type="Self.CharterPassenger" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterPassengers">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterPayments_Charter">
+          <End Role="Charters" Type="Self.Charter" Multiplicity="1" />
+          <End Role="CharterPayments" Type="Self.CharterPayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterPayments">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Charters_ApprovedBy">
+          <End Role="Users" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Charters" Type="Self.Charter" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Charters">
+              <PropertyRef Name="ApprovedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Charters_Customer">
+          <End Role="Users" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Charters" Type="Self.Charter" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Charters">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Charter">
+          <End Role="Charters" Type="Self.Charter" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Charters">
+              <PropertyRef Name="CharterId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="CharterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Driver">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CharterVehicles_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="CharterVehicles" Type="Self.CharterVehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="CharterVehicles">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Driver">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departure" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Route">
+          <End Role="Routes" Type="Self.Route" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departure" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Departures_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Departures" Type="Self.Departure" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="Departures">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Expenses_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="Expenses" Type="Self.Expens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Floats_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="Floats" Type="Self.Float" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Floats">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Incidents_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="Incidents" Type="Self.Incident" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Incidents">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SeatInventory_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="SeatInventory" Type="Self.SeatInventory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="SeatInventory">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Telemetry_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="Telemetry" Type="Self.Telemetry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="Telemetry">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WaypointChecks_Departure">
+          <End Role="Departures" Type="Self.Departure" Multiplicity="1" />
+          <End Role="WaypointChecks" Type="Self.WaypointCheck" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Departures">
+              <PropertyRef Name="DepartureId" />
+            </Principal>
+            <Dependent Role="WaypointChecks">
+              <PropertyRef Name="DepartureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DriverAssignments_Driver">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="DriverAssignments" Type="Self.DriverAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="DriverAssignments">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DriverAssignments_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="DriverAssignments" Type="Self.DriverAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="DriverAssignments">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FareRules_Route">
+          <End Role="Routes" Type="Self.Route" Multiplicity="1" />
+          <End Role="FareRules" Type="Self.FareRule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="FareRules">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Floats_User">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Floats" Type="Self.Float" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Floats">
+              <PropertyRef Name="IssuedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OwnerConfigs_Owner">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="OwnerConfigs" Type="Self.OwnerConfig" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="OwnerConfigs">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Routes_FromRank">
+          <End Role="Ranks" Type="Self.Rank" Multiplicity="1" />
+          <End Role="Routes" Type="Self.Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="FromRankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRanks_Rank">
+          <End Role="Ranks" Type="Self.Rank" Multiplicity="1" />
+          <End Role="UserRanks" Type="Self.UserRank" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="UserRanks">
+              <PropertyRef Name="RankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vehicles_HomeRank">
+          <End Role="Ranks" Type="Self.Rank" Multiplicity="0..1" />
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ranks">
+              <PropertyRef Name="RankId" />
+            </Principal>
+            <Dependent Role="Vehicles">
+              <PropertyRef Name="HomeRankId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RouteWaypoints_Route">
+          <End Role="Routes" Type="Self.Route" Multiplicity="1" />
+          <End Role="RouteWaypoints" Type="Self.RouteWaypoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="RouteId" />
+            </Principal>
+            <Dependent Role="RouteWaypoints">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WaypointChecks_Waypoint">
+          <End Role="RouteWaypoints" Type="Self.RouteWaypoint" Multiplicity="1" />
+          <End Role="WaypointChecks" Type="Self.WaypointCheck" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RouteWaypoints">
+              <PropertyRef Name="RouteWaypointId" />
+            </Principal>
+            <Dependent Role="WaypointChecks">
+              <PropertyRef Name="RouteWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Settlements_Owner">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Settlements" Type="Self.Settlement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Settlements">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRanks_User">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="UserRanks" Type="Self.UserRank" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRanks">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Vehicles_Owner">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Vehicles">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VehicleDocuments_Vehicle">
+          <End Role="Vehicles" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="VehicleDocuments" Type="Self.VehicleDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicles">
+              <PropertyRef Name="VehicleId" />
+            </Principal>
+            <Dependent Role="VehicleDocuments">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TaxiRankDb3Entities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AlertRules" EntityType="Self.AlertRule" />
+          <EntitySet Name="Alerts" EntityType="Self.Alert" />
+          <EntitySet Name="Approvals" EntityType="Self.Approval" />
+          <EntitySet Name="Attachments" EntityType="Self.Attachment" />
+          <EntitySet Name="AuditLogs" EntityType="Self.AuditLog" />
+          <EntitySet Name="Bookings" EntityType="Self.Booking" />
+          <EntitySet Name="BookingSeats" EntityType="Self.BookingSeat" />
+          <EntitySet Name="CashupBags" EntityType="Self.CashupBag" />
+          <EntitySet Name="CharterPassengers" EntityType="Self.CharterPassenger" />
+          <EntitySet Name="CharterPayments" EntityType="Self.CharterPayment" />
+          <EntitySet Name="Charters" EntityType="Self.Charter" />
+          <EntitySet Name="CharterVehicles" EntityType="Self.CharterVehicle" />
+          <EntitySet Name="Departures" EntityType="Self.Departure" />
+          <EntitySet Name="DriverAssignments" EntityType="Self.DriverAssignment" />
+          <EntitySet Name="Expenses" EntityType="Self.Expens" />
+          <EntitySet Name="FareRules" EntityType="Self.FareRule" />
+          <EntitySet Name="Floats" EntityType="Self.Float" />
+          <EntitySet Name="Incidents" EntityType="Self.Incident" />
+          <EntitySet Name="MapsCaches" EntityType="Self.MapsCache" />
+          <EntitySet Name="OwnerConfigs" EntityType="Self.OwnerConfig" />
+          <EntitySet Name="Passengers" EntityType="Self.Passenger" />
+          <EntitySet Name="Payments" EntityType="Self.Payment" />
+          <EntitySet Name="Ranks" EntityType="Self.Rank" />
+          <EntitySet Name="ReportingArchives" EntityType="Self.ReportingArchive" />
+          <EntitySet Name="Routes" EntityType="Self.Route" />
+          <EntitySet Name="RouteWaypoints" EntityType="Self.RouteWaypoint" />
+          <EntitySet Name="SeatInventories" EntityType="Self.SeatInventory" />
+          <EntitySet Name="Settlements" EntityType="Self.Settlement" />
+          <EntitySet Name="Telemetries" EntityType="Self.Telemetry" />
+          <EntitySet Name="UserRanks" EntityType="Self.UserRank" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="VehicleDocuments" EntityType="Self.VehicleDocument" />
+          <EntitySet Name="Vehicles" EntityType="Self.Vehicle" />
+          <EntitySet Name="WaypointChecks" EntityType="Self.WaypointCheck" />
+          <AssociationSet Name="FK_Expenses_Attachment" Association="Self.FK_Expenses_Attachment">
+            <End Role="Attachments" EntitySet="Attachments" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Bookings_Departure" Association="Self.FK_Bookings_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Bookings_Passenger" Association="Self.FK_Bookings_Passenger">
+            <End Role="Passengers" EntitySet="Passengers" />
+            <End Role="Bookings" EntitySet="Bookings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BookingSeats_Booking" Association="Self.FK_BookingSeats_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="BookingSeats" EntitySet="BookingSeats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payments_Booking" Association="Self.FK_Payments_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="Payments" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SeatInventory_Booking" Association="Self.FK_SeatInventory_Booking">
+            <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="SeatInventory" EntitySet="SeatInventories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CashupBags_Departure" Association="Self.FK_CashupBags_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="CashupBags" EntitySet="CashupBags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CashupBags_User" Association="Self.FK_CashupBags_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CashupBags" EntitySet="CashupBags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterPassengers_Charter" Association="Self.FK_CharterPassengers_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterPassengers" EntitySet="CharterPassengers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterPayments_Charter" Association="Self.FK_CharterPayments_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterPayments" EntitySet="CharterPayments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Charters_ApprovedBy" Association="Self.FK_Charters_ApprovedBy">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Charters" EntitySet="Charters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Charters_Customer" Association="Self.FK_Charters_Customer">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Charters" EntitySet="Charters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Charter" Association="Self.FK_CharterVehicles_Charter">
+            <End Role="Charters" EntitySet="Charters" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Driver" Association="Self.FK_CharterVehicles_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CharterVehicles_Vehicle" Association="Self.FK_CharterVehicles_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="CharterVehicles" EntitySet="CharterVehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Driver" Association="Self.FK_Departures_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Route" Association="Self.FK_Departures_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Departures_Vehicle" Association="Self.FK_Departures_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="Departures" EntitySet="Departures" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Expenses_Departure" Association="Self.FK_Expenses_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Floats_Departure" Association="Self.FK_Floats_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Floats" EntitySet="Floats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Incidents_Departure" Association="Self.FK_Incidents_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Incidents" EntitySet="Incidents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SeatInventory_Departure" Association="Self.FK_SeatInventory_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="SeatInventory" EntitySet="SeatInventories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Telemetry_Departure" Association="Self.FK_Telemetry_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="Telemetry" EntitySet="Telemetries" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WaypointChecks_Departure" Association="Self.FK_WaypointChecks_Departure">
+            <End Role="Departures" EntitySet="Departures" />
+            <End Role="WaypointChecks" EntitySet="WaypointChecks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DriverAssignments_Driver" Association="Self.FK_DriverAssignments_Driver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="DriverAssignments" EntitySet="DriverAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DriverAssignments_Vehicle" Association="Self.FK_DriverAssignments_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="DriverAssignments" EntitySet="DriverAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FareRules_Route" Association="Self.FK_FareRules_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="FareRules" EntitySet="FareRules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Floats_User" Association="Self.FK_Floats_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Floats" EntitySet="Floats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OwnerConfigs_Owner" Association="Self.FK_OwnerConfigs_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="OwnerConfigs" EntitySet="OwnerConfigs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Routes_FromRank" Association="Self.FK_Routes_FromRank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRanks_Rank" Association="Self.FK_UserRanks_Rank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="UserRanks" EntitySet="UserRanks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vehicles_HomeRank" Association="Self.FK_Vehicles_HomeRank">
+            <End Role="Ranks" EntitySet="Ranks" />
+            <End Role="Vehicles" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RouteWaypoints_Route" Association="Self.FK_RouteWaypoints_Route">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RouteWaypoints" EntitySet="RouteWaypoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WaypointChecks_Waypoint" Association="Self.FK_WaypointChecks_Waypoint">
+            <End Role="RouteWaypoints" EntitySet="RouteWaypoints" />
+            <End Role="WaypointChecks" EntitySet="WaypointChecks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Settlements_Owner" Association="Self.FK_Settlements_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Settlements" EntitySet="Settlements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRanks_User" Association="Self.FK_UserRanks_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRanks" EntitySet="UserRanks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Vehicles_Owner" Association="Self.FK_Vehicles_Owner">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Vehicles" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VehicleDocuments_Vehicle" Association="Self.FK_VehicleDocuments_Vehicle">
+            <End Role="Vehicles" EntitySet="Vehicles" />
+            <End Role="VehicleDocuments" EntitySet="VehicleDocuments" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TaxiRankDb3ModelStoreContainer" CdmEntityContainer="TaxiRankDb3Entities2">
+          <EntitySetMapping Name="AlertRules">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.AlertRule">
+              <MappingFragment StoreEntitySet="AlertRules">
+                <ScalarProperty Name="AlertRuleId" ColumnName="AlertRuleId" />
+                <ScalarProperty Name="MinFillComplianceThreshold" ColumnName="MinFillComplianceThreshold" />
+                <ScalarProperty Name="LateDepartureMinutes" ColumnName="LateDepartureMinutes" />
+                <ScalarProperty Name="CashVarianceThreshold" ColumnName="CashVarianceThreshold" />
+                <ScalarProperty Name="IncidentSpikeThreshold" ColumnName="IncidentSpikeThreshold" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Alerts">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Alert">
+              <MappingFragment StoreEntitySet="Alerts">
+                <ScalarProperty Name="AlertId" ColumnName="AlertId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="Severity" ColumnName="Severity" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="ResolvedAt" ColumnName="ResolvedAt" />
+                <ScalarProperty Name="ResolvedBy" ColumnName="ResolvedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Approvals">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Approval">
+              <MappingFragment StoreEntitySet="Approvals">
+                <ScalarProperty Name="ApprovalId" ColumnName="ApprovalId" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="RequestedBy" ColumnName="RequestedBy" />
+                <ScalarProperty Name="RequestedAt" ColumnName="RequestedAt" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Attachments">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Attachment">
+              <MappingFragment StoreEntitySet="Attachments">
+                <ScalarProperty Name="AttachmentId" ColumnName="AttachmentId" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="FileData" ColumnName="FileData" />
+                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
+                <ScalarProperty Name="UploadedAt" ColumnName="UploadedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AuditLogs">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.AuditLog">
+              <MappingFragment StoreEntitySet="AuditLog">
+                <ScalarProperty Name="AuditLogId" ColumnName="AuditLogId" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="Field" ColumnName="Field" />
+                <ScalarProperty Name="OldValue" ColumnName="OldValue" />
+                <ScalarProperty Name="NewValue" ColumnName="NewValue" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bookings">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Booking">
+              <MappingFragment StoreEntitySet="Bookings">
+                <ScalarProperty Name="BookingId" ColumnName="BookingId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="PassengerId" ColumnName="PassengerId" />
+                <ScalarProperty Name="SeatsCount" ColumnName="SeatsCount" />
+                <ScalarProperty Name="FareEach" ColumnName="FareEach" />
+                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Pnr" ColumnName="Pnr" />
+                <ScalarProperty Name="QrBlob" ColumnName="QrBlob" />
+                <ScalarProperty Name="ExpiresAt" ColumnName="ExpiresAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ExtendedAmount" ColumnName="ExtendedAmount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BookingSeats">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.BookingSeat">
+              <MappingFragment StoreEntitySet="BookingSeats">
+                <ScalarProperty Name="BookingSeatId" ColumnName="BookingSeatId" />
+                <ScalarProperty Name="BookingId" ColumnName="BookingId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="SeatNo" ColumnName="SeatNo" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CashupBags">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.CashupBag">
+              <MappingFragment StoreEntitySet="CashupBags">
+                <ScalarProperty Name="BagId" ColumnName="BagId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="CountedAmount" ColumnName="CountedAmount" />
+                <ScalarProperty Name="CountedBy" ColumnName="CountedBy" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CharterPassengers">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.CharterPassenger">
+              <MappingFragment StoreEntitySet="CharterPassengers">
+                <ScalarProperty Name="CharterPassengerId" ColumnName="CharterPassengerId" />
+                <ScalarProperty Name="CharterId" ColumnName="CharterId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CharterPayments">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.CharterPayment">
+              <MappingFragment StoreEntitySet="CharterPayments">
+                <ScalarProperty Name="CharterPaymentId" ColumnName="CharterPaymentId" />
+                <ScalarProperty Name="CharterId" ColumnName="CharterId" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="StripePaymentIntentId" ColumnName="StripePaymentIntentId" />
+                <ScalarProperty Name="PaidAt" ColumnName="PaidAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Charters">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Charter">
+              <MappingFragment StoreEntitySet="Charters">
+                <ScalarProperty Name="CharterId" ColumnName="CharterId" />
+                <ScalarProperty Name="Organizer" ColumnName="Organizer" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="PickupPlaceId" ColumnName="PickupPlaceId" />
+                <ScalarProperty Name="PickupLat" ColumnName="PickupLat" />
+                <ScalarProperty Name="PickupLng" ColumnName="PickupLng" />
+                <ScalarProperty Name="DropPlaceId" ColumnName="DropPlaceId" />
+                <ScalarProperty Name="DropLat" ColumnName="DropLat" />
+                <ScalarProperty Name="DropLng" ColumnName="DropLng" />
+                <ScalarProperty Name="Pax" ColumnName="Pax" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="QuoteAmount" ColumnName="QuoteAmount" />
+                <ScalarProperty Name="DepositPaid" ColumnName="DepositPaid" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="TaxiCount" ColumnName="TaxiCount" />
+                <ScalarProperty Name="ReturnTrip" ColumnName="ReturnTrip" />
+                <ScalarProperty Name="EventType" ColumnName="EventType" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="ApprovedAt" ColumnName="ApprovedAt" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="StripePaymentIntentId" ColumnName="StripePaymentIntentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CharterVehicles">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.CharterVehicle">
+              <MappingFragment StoreEntitySet="CharterVehicles">
+                <ScalarProperty Name="CharterVehicleId" ColumnName="CharterVehicleId" />
+                <ScalarProperty Name="CharterId" ColumnName="CharterId" />
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Departures">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Departure">
+              <MappingFragment StoreEntitySet="Departures">
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="RouteId" ColumnName="RouteId" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="PlannedTime" ColumnName="PlannedTime" />
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="MinFill" ColumnName="MinFill" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ReadyChecklist_MinFill" ColumnName="ReadyChecklist_MinFill" />
+                <ScalarProperty Name="ReadyChecklist_CashVerified" ColumnName="ReadyChecklist_CashVerified" />
+                <ScalarProperty Name="ReadyChecklist_FloatIssued" ColumnName="ReadyChecklist_FloatIssued" />
+                <ScalarProperty Name="ReadyChecklist_VehicleCleared" ColumnName="ReadyChecklist_VehicleCleared" />
+                <ScalarProperty Name="ManagerOverrideReady" ColumnName="ManagerOverrideReady" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DriverAssignments">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.DriverAssignment">
+              <MappingFragment StoreEntitySet="DriverAssignments">
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Expenses">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Expens">
+              <MappingFragment StoreEntitySet="Expenses">
+                <ScalarProperty Name="ExpenseId" ColumnName="ExpenseId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="ProofAttachmentId" ColumnName="ProofAttachmentId" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FareRules">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.FareRule">
+              <MappingFragment StoreEntitySet="FareRules">
+                <ScalarProperty Name="FareRuleId" ColumnName="FareRuleId" />
+                <ScalarProperty Name="RouteId" ColumnName="RouteId" />
+                <ScalarProperty Name="RuleType" ColumnName="RuleType" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Floats">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Float">
+              <MappingFragment StoreEntitySet="Floats">
+                <ScalarProperty Name="FloatId" ColumnName="FloatId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="AmountIssued" ColumnName="AmountIssued" />
+                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+                <ScalarProperty Name="IssuedBy" ColumnName="IssuedBy" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Incidents">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Incident">
+              <MappingFragment StoreEntitySet="Incidents">
+                <ScalarProperty Name="IncidentId" ColumnName="IncidentId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MapsCaches">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.MapsCache">
+              <MappingFragment StoreEntitySet="MapsCache">
+                <ScalarProperty Name="MapsCacheId" ColumnName="MapsCacheId" />
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Json" ColumnName="Json" />
+                <ScalarProperty Name="CachedAt" ColumnName="CachedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OwnerConfigs">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.OwnerConfig">
+              <MappingFragment StoreEntitySet="OwnerConfigs">
+                <ScalarProperty Name="ManagerSharePercent" ColumnName="ManagerSharePercent" />
+                <ScalarProperty Name="OwnerConfigId" ColumnName="OwnerConfigId" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="DriverSharePercent" ColumnName="DriverSharePercent" />
+                <ScalarProperty Name="EffectiveFrom" ColumnName="EffectiveFrom" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Passengers">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Passenger">
+              <MappingFragment StoreEntitySet="Passengers">
+                <ScalarProperty Name="PassengerId" ColumnName="PassengerId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="NextOfKinName" ColumnName="NextOfKinName" />
+                <ScalarProperty Name="NextOfKinPhone" ColumnName="NextOfKinPhone" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Payments">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Payment">
+              <MappingFragment StoreEntitySet="Payments">
+                <ScalarProperty Name="PaymentId" ColumnName="PaymentId" />
+                <ScalarProperty Name="BookingId" ColumnName="BookingId" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="Reference" ColumnName="Reference" />
+                <ScalarProperty Name="PaidAt" ColumnName="PaidAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ranks">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Rank">
+              <MappingFragment StoreEntitySet="Ranks">
+                <ScalarProperty Name="RankId" ColumnName="RankId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Province" ColumnName="Province" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportingArchives">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.ReportingArchive">
+              <MappingFragment StoreEntitySet="ReportingArchive">
+                <ScalarProperty Name="ArchiveId" ColumnName="ArchiveId" />
+                <ScalarProperty Name="PeriodMonth" ColumnName="PeriodMonth" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="FileData" ColumnName="FileData" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Route">
+              <MappingFragment StoreEntitySet="Routes">
+                <ScalarProperty Name="RouteId" ColumnName="RouteId" />
+                <ScalarProperty Name="FromRankId" ColumnName="FromRankId" />
+                <ScalarProperty Name="ToName" ColumnName="ToName" />
+                <ScalarProperty Name="ToPlaceId" ColumnName="ToPlaceId" />
+                <ScalarProperty Name="ToLatitude" ColumnName="ToLatitude" />
+                <ScalarProperty Name="ToLongitude" ColumnName="ToLongitude" />
+                <ScalarProperty Name="DefaultFare" ColumnName="DefaultFare" />
+                <ScalarProperty Name="DistanceKm" ColumnName="DistanceKm" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RouteWaypoints">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.RouteWaypoint">
+              <MappingFragment StoreEntitySet="RouteWaypoints">
+                <ScalarProperty Name="RouteWaypointId" ColumnName="RouteWaypointId" />
+                <ScalarProperty Name="RouteId" ColumnName="RouteId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Sequence" ColumnName="Sequence" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SeatInventories">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.SeatInventory">
+              <MappingFragment StoreEntitySet="SeatInventory">
+                <ScalarProperty Name="SeatInventoryId" ColumnName="SeatInventoryId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="SeatNo" ColumnName="SeatNo" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="BookingId" ColumnName="BookingId" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Settlements">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Settlement">
+              <MappingFragment StoreEntitySet="Settlements">
+                <ScalarProperty Name="ManagerShare" ColumnName="ManagerShare" />
+                <ScalarProperty Name="SettlementId" ColumnName="SettlementId" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="PeriodDay" ColumnName="PeriodDay" />
+                <ScalarProperty Name="Gross" ColumnName="Gross" />
+                <ScalarProperty Name="Expenses" ColumnName="Expenses" />
+                <ScalarProperty Name="DriverShare" ColumnName="DriverShare" />
+                <ScalarProperty Name="NetToOwner" ColumnName="NetToOwner" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Telemetries">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Telemetry">
+              <MappingFragment StoreEntitySet="Telemetry">
+                <ScalarProperty Name="TelemetryId" ColumnName="TelemetryId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="SpeedKph" ColumnName="SpeedKph" />
+                <ScalarProperty Name="Battery" ColumnName="Battery" />
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRanks">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.UserRank">
+              <MappingFragment StoreEntitySet="UserRanks">
+                <ScalarProperty Name="UserRankId" ColumnName="UserRankId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="RankId" ColumnName="RankId" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VehicleDocuments">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.VehicleDocument">
+              <MappingFragment StoreEntitySet="VehicleDocuments">
+                <ScalarProperty Name="VehicleDocumentId" ColumnName="VehicleDocumentId" />
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="DocType" ColumnName="DocType" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="FileData" ColumnName="FileData" />
+                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
+                <ScalarProperty Name="UploadedAt" ColumnName="UploadedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vehicles">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.Vehicle">
+              <MappingFragment StoreEntitySet="Vehicles">
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="RegNo" ColumnName="RegNo" />
+                <ScalarProperty Name="Make" ColumnName="Make" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Seats" ColumnName="Seats" />
+                <ScalarProperty Name="OwnerId" ColumnName="OwnerId" />
+                <ScalarProperty Name="HomeRankId" ColumnName="HomeRankId" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WaypointChecks">
+            <EntityTypeMapping TypeName="TaxiRankDb3Model.WaypointCheck">
+              <MappingFragment StoreEntitySet="WaypointChecks">
+                <ScalarProperty Name="WaypointCheckId" ColumnName="WaypointCheckId" />
+                <ScalarProperty Name="DepartureId" ColumnName="DepartureId" />
+                <ScalarProperty Name="RouteWaypointId" ColumnName="RouteWaypointId" />
+                <ScalarProperty Name="ReachedAt" ColumnName="ReachedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

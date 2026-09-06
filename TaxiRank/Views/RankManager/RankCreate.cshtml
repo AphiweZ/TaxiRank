@@ -1,0 +1,172 @@
+﻿@model TaxiRank.Models.ViewModels.RankCreateVM
+@{
+    ViewBag.Title = "Create Rank";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var decSep = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+}
+<div class="container py-3">
+    <h3>Create Rank</h3>
+
+    @using (Html.BeginForm("RankCreate", "RankManager", FormMethod.Post, new { id = "rankForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Name</label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required", id = "Name" })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">City</label>
+                @Html.TextBoxFor(m => m.City, new { @class = "form-control", required = "required", id = "City" })
+                @Html.ValidationMessageFor(m => m.City, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Province</label>
+                @Html.TextBoxFor(m => m.Province, new { @class = "form-control", id = "Province" })
+                @Html.ValidationMessageFor(m => m.Province, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Place / Address <span class="text-muted small">(max 128 chars)</span></label>
+                @Html.TextBoxFor(m => m.PlaceId, new { @class = "form-control", placeholder = "Start typing address…", autocomplete = "off", id = "PlaceId", maxlength = "128" })
+                <div id="addrTrimNote" class="form-text text-warning d-none">Address was trimmed to 128 characters to fit the database field.</div>
+                @Html.ValidationMessageFor(m => m.PlaceId, "", new { @class = "text-danger small" })
+            </div>
+
+            <!-- Use text inputs; we convert to server culture on submit -->
+            <div class="col-md-3">
+                <label class="form-label">Latitude</label>
+                @Html.TextBoxFor(m => m.Latitude, new { @class = "form-control", id = "Latitude", inputmode = "decimal", placeholder = "-29,857900" })
+                @Html.ValidationMessageFor(m => m.Latitude, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Longitude</label>
+                @Html.TextBoxFor(m => m.Longitude, new { @class = "form-control", id = "Longitude", inputmode = "decimal", placeholder = "31,029200" })
+                @Html.ValidationMessageFor(m => m.Longitude, "", new { @class = "text-danger small" })
+            </div>
+
+            <div class="col-12">
+                <div id="map" class="border rounded" style="height:260px"></div>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                    <label class="form-check-label">Active</label>
+                </div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("RanksList")">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&libraries=places"></script>
+<script>
+(function () {
+    var map, marker;
+    var serverSep = "@decSep"; // server's expected decimal separator
+
+    function toServerDecimal(val) {
+        if (val == null) return "";
+        var s = ("" + val).trim();
+        // Accept either comma or dot from user/browser, then emit server culture
+        s = s.replace(",", ".");               // normalize
+        var n = parseFloat(s);
+        if (isNaN(n)) return "";
+        var fixed = n.toFixed(6);              // 6 dp for DECIMAL(9,6)
+        return (serverSep === ",") ? fixed.replace(".", ",") : fixed;
+    }
+
+    function setLatLng(lat, lng, centerMap) {
+        var latEl = document.getElementById("Latitude");
+        var lngEl = document.getElementById("Longitude");
+        if (latEl) latEl.value = toServerDecimal(lat);
+        if (lngEl) lngEl.value = toServerDecimal(lng);
+
+        if (map && marker && centerMap !== false) {
+            var latNum = parseFloat(("" + latEl.value).replace(",", "."));
+            var lngNum = parseFloat(("" + lngEl.value).replace(",", "."));
+            if (!isNaN(latNum) && !isNaN(lngNum)) {
+                var pos = { lat: latNum, lng: lngNum };
+                marker.setPosition(pos);
+                map.setCenter(pos);
+                map.setZoom(14);
+            }
+        }
+    }
+
+    function initMap() {
+        var el = document.getElementById("map");
+        if (!el || !(window.google && google.maps)) return;
+        map = new google.maps.Map(el, { center: { lat: -29.8579, lng: 31.0292 }, zoom: 10 });
+        marker = new google.maps.Marker({ map: map, position: map.getCenter(), draggable: true });
+        google.maps.event.addListener(marker, "dragend", function (e) {
+            setLatLng(e.latLng.lat(), e.latLng.lng(), false);
+        });
+    }
+
+    function initAutocomplete() {
+        var input = document.getElementById("PlaceId");
+        if (!input || !(window.google && google.maps && google.maps.places)) return;
+        var ac = new google.maps.places.Autocomplete(input, { types: ["geocode"] });
+        google.maps.event.addListener(ac, "place_changed", function () {
+            var place = ac.getPlace();
+            if (!place || !place.geometry || !place.geometry.location) return;
+
+            if (place.formatted_address) {
+                input.value = place.formatted_address;
+                if (input.value.length > 128) {
+                    input.value = input.value.substring(0, 128);
+                    var note = document.getElementById("addrTrimNote");
+                    if (note) note.classList.remove("d-none");
+                }
+            }
+
+            var lat = place.geometry.location.lat();
+            var lng = place.geometry.location.lng();
+            setLatLng(lat, lng, true);
+        });
+    }
+
+    function beforeSubmit(e) {
+        var place = document.getElementById("PlaceId");
+        var note = document.getElementById("addrTrimNote");
+        if (place && place.value.length > 128) {
+            place.value = place.value.substring(0, 128);
+            if (note) note.classList.remove("d-none");
+        }
+
+        // Convert any typed values to server format
+        var latEl = document.getElementById("Latitude");
+        var lngEl = document.getElementById("Longitude");
+        if (latEl) latEl.value = toServerDecimal(latEl.value);
+        if (lngEl) lngEl.value = toServerDecimal(lngEl.value);
+
+        // Basic guard to avoid empty/invalid posts
+        var latOk = latEl && latEl.value && !isNaN(parseFloat(latEl.value.replace(",", ".")));
+        var lngOk = lngEl && lngEl.value && !isNaN(parseFloat(lngEl.value.replace(",", ".")));
+        if (!latOk || !lngOk) {
+            e.preventDefault();
+            alert("Please provide a valid latitude and longitude.");
+        }
+    }
+
+    window.addEventListener("load", function () {
+        initMap();
+        initAutocomplete();
+        var f = document.getElementById("rankForm");
+        if (f) f.addEventListener("submit", beforeSubmit);
+    });
+})();
+</script>

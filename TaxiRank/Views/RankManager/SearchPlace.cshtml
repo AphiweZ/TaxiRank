@@ -1,0 +1,67 @@
+﻿@model TaxiRank.Models.ViewModels.MapsSearchVM
+@{
+    ViewBag.Title = "Search Place";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var mapsKey = System.Configuration.ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+
+    string ptsJson = "[]";
+    if (Model.Results != null && Model.Results.Any())
+    {
+        ptsJson = Newtonsoft.Json.JsonConvert.SerializeObject(
+            Model.Results.Select(r => new { lat = (double)r.Latitude, lng = (double)r.Longitude, name = r.Address })
+        );
+    }
+}
+<div class="container py-3">
+    <h3 class="mb-3">Search Place</h3>
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-8"><input class="form-control" name="q" value="@Model.Query" placeholder="Search address or place name…" /></div>
+        <div class="col-md-4"><button class="btn btn-outline-secondary">Search</button></div>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-lg-5">
+            <div class="list-group">
+                @if (Model.Results != null && Model.Results.Any())
+                {
+                    foreach (var r in Model.Results)
+                    {
+                        <div class="list-group-item">
+                            <div class="fw-bold">@r.Address</div>
+                            <div class="small text-muted">@r.Latitude, @r.Longitude</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="list-group-item text-muted">No results yet.</div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Map</strong></div>
+                <div id="place-map" style="height:420px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(mapsKey))
+{
+    <script src="https://maps.googleapis.com/maps/api/js?key=@mapsKey"></script>
+    <script>
+    (function(){
+        var points = @Html.Raw(ptsJson);
+        function init(){
+            var el = document.getElementById("place-map"); if(!el) return;
+            var center = points.length ? {lat:points[0].lat, lng:points[0].lng} : {lat:-28.5, lng:24.7};
+            var map = new google.maps.Map(el, {zoom: points.length?7:5, center:center});
+            for (var i=0;i<points.length;i++){
+                new google.maps.Marker({map:map, position:{lat:points[i].lat, lng:points[i].lng}, title: points[i].name});
+            }
+        }
+        if (window.google && google.maps) init(); else window.addEventListener("load", init);
+    })();
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿@model TaxiRank.Models.ViewModels.DriverAssignmentCreateVM
+@{
+    ViewBag.Title = "Assign Driver";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Assign Driver to Vehicle</h3>
+    @using (Html.BeginForm("DriverAssignmentCreate", "RankManager", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-4">@Html.Label("Driver")@Html.DropDownListFor(m => m.DriverId, new SelectList(Model.DriverOptions, "Id", "Name"), "-- driver --", new { @class = "form-select" })</div>
+            <div class="col-md-4">@Html.Label("Vehicle")@Html.DropDownListFor(m => m.VehicleId, new SelectList(Model.VehicleOptions, "Id", "Name"), "-- vehicle --", new { @class = "form-select" })</div>
+            <div class="col-md-4">@Html.LabelFor(m => m.StartDate)@Html.TextBoxFor(m => m.StartDate, new { @class = "form-control", type = "date" })</div>
+            <div class="col-md-4">@Html.LabelFor(m => m.EndDate)@Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", type = "date" })</div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("VehiclesList")">Back</a>
+            </div>
+        </div>
+    }
+</div>

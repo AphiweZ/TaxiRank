@@ -1,0 +1,42 @@
+﻿@model TaxiRank.Models.ViewModels.TicketVM
+@{
+    ViewBag.Title = "Ticket (Driver View)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Ticket — @Model.Pnr</strong>
+                    <img src="~/Content/images/tickets.jpg" alt="" style="height:40px" class="rounded" />
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-6"><div class="text-muted">Passenger</div><div class="h5 mb-0">@Model.Passenger</div></div>
+                        <div class="col-md-6"><div class="text-muted">Route</div><div class="h5 mb-0">@Model.Route</div></div>
+                        <div class="col-md-4"><div class="text-muted">Date</div><div class="h5 mb-0">@Model.DepartureDate.ToString("yyyy-MM-dd")</div></div>
+                        <div class="col-md-4"><div class="text-muted">Time</div><div class="h5 mb-0">@Model.Time</div></div>
+                        <div class="col-md-4"><div class="text-muted">Seats</div><div class="h5 mb-0">@Model.Seats</div></div>
+                        <div class="col-md-6"><div class="text-muted">Vehicle Reg.No.</div><div class="h5 mb-0">@Model.VehicleReg</div></div>
+
+                    </div>
+                    <button class="btn btn-outline-dark" onclick="window.print()">Print</button>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div>Total</div>
+                        <div class="h5 mb-0">@Model.Total.ToString("0.00") ZAR</div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex gap-2">
+                    <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="alert alert-info">
+                Verify the PNR matches passenger’s ID if needed.
+            </div>
+        </div>
+    </div>
+</div>

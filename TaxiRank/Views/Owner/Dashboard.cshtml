@@ -1,0 +1,177 @@
+﻿@model TaxiRank.Models.ViewModels.OwnerDashboardVM
+@{
+    ViewBag.Title = "Owner Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var mapsKey = System.Configuration.ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+
+  
+    string ptsJson = "[]";
+    if (!string.IsNullOrWhiteSpace(mapsKey))
+    {
+        using (var db = new TaxiRank.Models.TaxiRankDb3Entities2())
+        {
+            var regs = Model.UpcomingDepartures
+                            .Select(x => x.VehicleReg)
+                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                            .Distinct()
+                            .ToList();
+
+            var points = new List<object>();
+            foreach (var vreg in regs)
+            {
+                var vv = db.Vehicles.FirstOrDefault(v => v.RegNo == vreg);
+                if (vv != null && vv.HomeRankId.HasValue)
+                {
+                    var rk = db.Ranks.FirstOrDefault(r => r.RankId == vv.HomeRankId.Value);
+                    if (rk != null && rk.Latitude.HasValue && rk.Longitude.HasValue)
+                    {
+                        points.Add(new
+                        {
+                            reg = vreg,
+                            lat = (double)rk.Latitude.Value,
+                            lng = (double)rk.Longitude.Value,
+                            name = rk.Name
+                        });
+                    }
+                }
+            }
+            ptsJson = Newtonsoft.Json.JsonConvert.SerializeObject(points);
+        }
+    }
+}
+
+<div class="container py-3">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-7">
+            <h2 class="mb-1">Owner Dashboard</h2>
+            <div class="text-muted">Today: @Model.Date.ToString("yyyy-MM-dd")</div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.VehiclesCount</div><div class="text-muted">Vehicles</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.PaymentsToday.ToString("0.00")</div><div class="text-muted">Paid Today</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.GrossLast7Days.ToString("0.00")</div><div class="text-muted">Gross (7d)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.ExpensesLast7Days.ToString("0.00")</div><div class="text-muted">Expenses (7d)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.NetLast7Days.ToString("0.00")</div><div class="text-muted">Net (7d)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">@Model.GrossMonthToDate.ToString("0.00")</div><div class="text-muted">Gross (MTD)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-xl-7">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Upcoming Departures</strong>
+                    <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Departures")">All departures</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light"><tr><th>Date</th><th>Time</th><th>Route</th><th>Vehicle</th><th>Booked</th><th>Status</th><th></th></tr></thead>
+                        <tbody>
+                            @foreach (var d in Model.UpcomingDepartures)
+                            {
+                                <tr>
+                                    <td>@d.Date.ToString("yyyy-MM-dd")</td>
+                                    <td>@d.PlannedTime</td>
+                                    <td>@d.RouteName</td>
+                                    <td>@d.VehicleReg</td>
+                                    <td>@d.SeatsBooked / @d.SeatsTotal</td>
+                                    <td>@d.Status</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-outline-dark" href="@Url.Action("DepartureDetail", new { id = d.DepartureId })">Open</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Recent Payments</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Amount</th><th>Method</th><th>Ref</th></tr></thead>
+                        <tbody>
+                            @foreach (var p in Model.RecentPayments)
+                            {
+                                <tr>
+                                    <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@p.Amount.ToString("0.00")</td>
+                                    <td>@p.Method</td>
+                                    <td class="text-truncate" style="max-width:160px">@p.Reference</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Recent Incidents</strong></div>
+                <div class="table-responsive" style="max-height:300px">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Type</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            @foreach (var i in Model.RecentIncidents)
+                            {
+                                <tr>
+                                    <td>@i.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@i.Type</td>
+                                    <td class="text-truncate" style="max-width:200px">@i.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var cards = document.querySelectorAll(".card");
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].addEventListener("mouseenter", function () { this.classList.add("shadow"); });
+            cards[i].addEventListener("mouseleave", function () { this.classList.remove("shadow"); });
+        }
+    });
+</script>

@@ -1,0 +1,32 @@
+﻿@model TaxiRank.Models.ViewModels.VehicleCreateVM
+@{
+    ViewBag.Title = "Edit Vehicle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Edit Vehicle</h3>
+    @using (Html.BeginForm("VehicleEdit", "RankManager", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.VehicleId)
+        <div class="row g-3">
+            <div class="col-md-3">@Html.LabelFor(m => m.RegNo)@Html.TextBoxFor(m => m.RegNo, new { @class = "form-control", })</div>
+            <div class="col-md-3">@Html.LabelFor(m => m.Make)@Html.TextBoxFor(m => m.Make, new { @class = "form-control" })</div>
+            <div class="col-md-3">@Html.LabelFor(m => m.Model)@Html.TextBoxFor(m => m.Model, new { @class = "form-control" })</div>
+            <div class="col-md-3">@Html.LabelFor(m => m.Year)@Html.TextBoxFor(m => m.Year, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-3">@Html.LabelFor(m => m.Seats)@Html.TextBoxFor(m => m.Seats, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-3">@Html.Label("Owner")@Html.DropDownListFor(m => m.OwnerId, new SelectList(Model.OwnerOptions, "Id", "Name", Model.OwnerId), null, new { @class = "form-select" })</div>
+            <div class="col-md-3">@Html.Label("Home Rank")@Html.DropDownListFor(m => m.HomeRankId, new SelectList(Model.RankOptions, "Id", "Name", Model.HomeRankId), null, new { @class = "form-select" })</div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="Active" value="true" @(Model.Active ? "checked" : "") />
+                    <label class="form-check-label">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("VehiclesList")">Back</a>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,46 @@
+﻿@model TaxiRank.Models.ViewModels.DriverAssignmentCreateVM
+@{
+    ViewBag.Title = "New Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3 class="mb-3">New Driver Assignment</h3>
+    @using (Html.BeginForm("AssignmentCreate", "Owner", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Vehicle</label>
+                <select name="VehicleId" class="form-select" required>
+                    <option value="">Select vehicle</option>
+                    @foreach (var o in Model.VehicleOptions)
+                    {
+                        <option value="@o.Id">@o.Name</option>
+}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Driver</label>
+                <select name="DriverId" class="form-select" required>
+                    <option value="">Select driver</option>
+                    @foreach (var o in Model.DriverOptions)
+                    {
+                        <option value="@o.Id">@o.Name</option>
+}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Start</label>
+                <input type="date" name="StartDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">End (optional)</label>
+                <input type="date" name="EndDate" class="form-control" />
+            </div>
+            <div class="col-12">
+                <button class="btn btn-outline-primary">Create</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("Assignments")">Cancel</a>
+            </div>
+        </div>
+    }
+</div>

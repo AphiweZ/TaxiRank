@@ -1,0 +1,37 @@
+﻿@model TaxiRank.Models.ViewModels.ManagerEventListVM
+@{
+    ViewBag.Title = "Event Requests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Event Requests</h3>
+        <form method="get" class="d-flex gap-2">
+            <select class="form-select" name="status">
+                @foreach (var s in new[] { "Requested", "Approved", "Rejected", "Assigned", "InProgress", "Completed", "Cancelled" })
+                {
+                    <option value="@s" @(Model.Status == s ? "selected" : "")>@s</option>
+                }
+            </select>
+            <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light"><tr><th>Date</th><th>Event</th><th>Taxis</th><th>Status</th><th>Quote</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td>@r.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@r.EventType</td>
+                        <td>@r.TaxiCount @(r.ReturnTrip?"(Return)":"")</td>
+                        <td>@r.Status @(r.IsPaid?"· Paid":"")</td>
+                        <td>@r.QuoteAmount.ToString("0.00")</td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-dark" href="@Url.Action("EventDetail", new { id=r.CharterId })">Open</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@model TaxiRank.Models.ViewModels.VehicleListVM
+@{
+    ViewBag.Title = "Fleet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Fleet</h3>
+        <a href="@Url.Action("VehicleCreate")" class="btn btn-primary">Add Vehicle</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3">
+            <select name="ownerId" class="form-select">
+                <option value="">Owner</option>
+                @foreach (var o in Model.OwnerOptions)
+                {
+                    <option value="@o.Id" @(Model.OwnerId == o.Id ? "selected" : "")>@o.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="rankId" class="form-select">
+                <option value="">Home Rank</option>
+                @foreach (var r in Model.RankOptions)
+                {
+                    <option value="@r.Id" @(Model.RankId == r.Id ? "selected" : "")>@r.Name</option>
+}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="active" class="form-select">
+                <option value="">Status</option>
+                <option value="true" @(Model.Active == true ? "selected" : "")>Active</option>
+                <option value="false" @(Model.Active == false ? "selected" : "")>Inactive</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input name="search" class="form-control" placeholder="Search reg/make/model" value="@Model.Search" />
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-outline-secondary w-100">Go</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light"><tr><th>Reg No</th><th>Make/Model</th><th>Seats</th><th>Owner</th><th>Home Rank</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var v in Model.Rows)
+                {
+                    <tr>
+                        <td>@v.RegNo</td>
+                        <td>@(string.Join(" ", new[]{ v.Make, v.Model }.Where(x=>!string.IsNullOrWhiteSpace(x))))</td>
+                        <td>@v.Seats</td>
+                        <td>@v.OwnerName</td>
+                        <td>@v.HomeRank</td>
+                        <td>@(v.Active ? "Active" : "Inactive")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" href="@Url.Action("VehicleEdit", new { id = v.VehicleId })">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

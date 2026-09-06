@@ -1,0 +1,82 @@
+﻿@model TaxiRank.Models.ViewModels.VehicleCreateVM
+@{
+    ViewBag.Title = "Add Vehicle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Add Vehicle</h3>
+    @using (Html.BeginForm("VehicleCreate", "RankManager", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row g-3">
+            <div class="col-md-3">
+                @Html.LabelFor(m => m.RegNo)
+                <span class="text-danger">*</span>
+                @Html.TextBoxFor(m => m.RegNo, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.RegNo, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(m => m.Make)
+                @Html.TextBoxFor(m => m.Make, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(m => m.Model)
+                @Html.TextBoxFor(m => m.Model, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(m => m.Year)
+                @Html.TextBoxFor(m => m.Year, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(m => m.Year, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(m => m.Seats)
+                <span class="text-danger">*</span>
+
+                @{
+                   
+                    List<SelectListItem> seatOptions = new List<SelectListItem>
+            {
+            new SelectListItem { Value = "16", Text = "16" },
+            new SelectListItem { Value = "24", Text = "24" }
+        };
+                }
+
+                @Html.DropDownListFor(
+                    m => m.Seats,          
+                    seatOptions,           
+                    "Select Seats",        
+                    new { @class = "form-control" } 
+                )
+
+                @Html.ValidationMessageFor(m => m.Seats, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3">
+                @Html.Label("Owner")
+                <span class="text-danger">*</span>
+                @Html.DropDownListFor(m => m.OwnerId, new SelectList(Model.OwnerOptions, "Id", "Name"), "-- owner --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.OwnerId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3">
+                @Html.Label("Home Rank")
+                @Html.DropDownListFor(m => m.HomeRankId, new SelectList(Model.RankOptions, "Id", "Name"), "-- rank --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.HomeRankId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="Active" value="true" @(Model.Active ? "checked" : "") />
+                    <label class="form-check-label">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("VehiclesList")">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}

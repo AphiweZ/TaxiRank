@@ -1,0 +1,146 @@
+﻿@model TaxiRank.Models.ViewModels.DepartureDetailVM
+@{
+    ViewBag.Title = "Departure Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h3 class="mb-0">@Model.RouteName — @Model.Date.ToString("yyyy-MM-dd") @Model.PlannedTime</h3>
+            <div class="text-muted">Vehicle: @Model.VehicleReg • Driver: @Model.DriverName • Status: <span class="badge text-bg-dark">@Model.Status</span></div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Seat Map</strong></div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        @foreach (var s in Model.SeatMap)
+                        {
+                            var cls = s.Status == "Free" ? "bg-success" : (s.Status == "Booked" ? "bg-secondary" : "bg-warning");
+                            <div class="col-2"><span class="badge w-100 @cls">@s.SeatNo</span></div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Bookings</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light"><tr><th>PNR</th><th>Passenger</th><th>Seats</th><th>Total</th><th>Status</th><th>Method</th></tr></thead>
+                        <tbody>
+                            @foreach (var b in Model.Bookings)
+                            {
+                                <tr>
+                                    <td>@b.Pnr</td>
+                                    <td>@b.PassengerName</td>
+                                    <td>@b.SeatsCount</td>
+                                    <td>@b.ExtendedAmount.ToString("0.00")</td>
+                                    <td>@b.Status</td>
+                                    <td>@b.PaymentMethod</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><strong>Payments</strong></div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light"><tr><th>When</th><th>Amount</th><th>Method</th></tr></thead>
+                                <tbody>
+                                    @foreach (var p in Model.Payments)
+                                    {
+                                        <tr>
+                                            <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@p.Amount.ToString("0.00")</td>
+                                            <td>@p.Method</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><strong>Expenses</strong></div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light"><tr><th>When</th><th>Type</th><th>Amount</th></tr></thead>
+                                <tbody>
+                                    @foreach (var e in Model.Expenses)
+                                    {
+                                        <tr>
+                                            <td>@e.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@e.Type</td>
+                                            <td>@e.Amount.ToString("0.00")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-body small text-muted">Cash-ups and floats are visible on the driver screens.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header"><strong>Floats</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Amount</th><th>Purpose</th></tr></thead>
+                        <tbody>
+                            @foreach (var f in Model.Floats)
+                            {
+                                <tr>
+                                    <td>@f.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@f.AmountIssued.ToString("0.00")</td>
+                                    <td>@f.Purpose</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><strong>Incidents</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-light"><tr><th>When</th><th>Type</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            @foreach (var i in Model.Incidents)
+                            {
+                                <tr>
+                                    <td>@i.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@i.Type</td>
+                                    <td class="text-truncate" style="max-width:180px">@i.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  var badges = document.querySelectorAll(".badge");
+  for (var i=0;i<badges.length;i++){
+    badges[i].addEventListener("mouseenter", function(){ this.style.transform="scale(1.05)"; this.style.transition="transform .1s"; });
+    badges[i].addEventListener("mouseleave", function(){ this.style.transform=""; });
+  }
+});
+</script>

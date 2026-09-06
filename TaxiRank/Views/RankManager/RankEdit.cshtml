@@ -1,0 +1,177 @@
+﻿@model TaxiRank.Models.ViewModels.RankCreateVM
+@{
+    ViewBag.Title = "Edit Rank";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Edit Rank</h3>
+    @using (Html.BeginForm("RankEdit", "RankManager", FormMethod.Post, new { id = "rankForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.RankId)
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Search Place</label>
+                <input id="placeSearch" class="form-control" placeholder="Search rank, station or suburb" autocomplete="off" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Map</label>
+                <div id="map" style="height:300px;border-radius:.5rem;"></div>
+            </div>
+
+            <div class="col-md-4"><label class="form-label">Name</label>@Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required", id = "Name" })</div>
+            <div class="col-md-4"><label class="form-label">City</label>@Html.TextBoxFor(m => m.City, new { @class = "form-control", required = "required", id = "City" })</div>
+            <div class="col-md-4"><label class="form-label">Province</label>@Html.TextBoxFor(m => m.Province, new { @class = "form-control", id = "Province" })</div>
+
+            <div class="col-md-6"><label class="form-label">Place Id</label>@Html.TextBoxFor(m => m.PlaceId, new { @class = "form-control", id = "PlaceId" })</div>
+            <div class="col-md-3"><label class="form-label">Latitude</label>@Html.TextBoxFor(m => m.Latitude, new { @class = "form-control", type = "text", id = "Latitude" })</div>
+            <div class="col-md-3"><label class="form-label">Longitude</label>@Html.TextBoxFor(m => m.Longitude, new { @class = "form-control", type = "text", id = "Longitude" })</div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input", id = "IsActive" })
+                    <label class="form-check-label" for="IsActive">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("RanksList")">Back</a>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzGOGXloVFr8w-Pe53rgPWuQv-P3KnIaE&libraries=places"></script>
+<script>
+(function () {
+  var map, marker, geocoder, autocomplete;
+
+  function toNum(v) {
+    if (v == null) return null;
+    v = ("" + v).trim().replace(",", ".");
+    var n = parseFloat(v);
+    if (isNaN(n)) return null;
+    return n;
+  }
+
+  function clampLat(n) {
+    if (n == null) return null;
+    return Math.min(90, Math.max(-90, n));
+  }
+
+  function clampLng(n) {
+    if (n == null) return null;
+    return Math.min(180, Math.max(-180, n));
+  }
+
+  function fmt6(n) {
+    if (n == null || isNaN(n)) return "";
+    return n.toFixed(6);
+  }
+
+  function setMarker(lat, lng, pan) {
+    var pos = new google.maps.LatLng(lat, lng);
+    if (!marker) {
+      marker = new google.maps.Marker({ map: map, position: pos, draggable: true });
+      marker.addListener("dragend", function (e) {
+        var lt = clampLat(e.latLng.lat());
+        var lg = clampLng(e.latLng.lng());
+        updateLatLngInputs(lt, lg, true);
+      });
+    } else {
+      marker.setPosition(pos);
+    }
+    if (pan) map.panTo(pos);
+  }
+
+  function updateLatLngInputs(lat, lng, reverseGeo) {
+    document.getElementById("Latitude").value = fmt6(lat);
+    document.getElementById("Longitude").value = fmt6(lng);
+    if (reverseGeo) reverseGeocode(lat, lng);
+  }
+
+  function reverseGeocode(lat, lng) {
+    if (!geocoder) geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: { lat: lat, lng: lng } }, function (res, status) {
+      if (status !== "OK" || !res || !res.length) return;
+      var comp = res[0].address_components || [];
+      var city = getComp(comp, ["locality","sublocality","postal_town","administrative_area_level_2"]);
+      var province = getComp(comp, ["administrative_area_level_1"]);
+      if (!document.getElementById("City").value) document.getElementById("City").value = city || "";
+      if (!document.getElementById("Province").value) document.getElementById("Province").value = province || "";
+    });
+  }
+
+  function getComp(components, types) {
+    for (var i=0;i<components.length;i++) {
+      var c = components[i];
+      for (var j=0;j<types.length;j++) {
+        if ((c.types||[]).indexOf(types[j]) >= 0) return c.long_name || c.short_name;
+      }
+    }
+    return null;
+  }
+
+  function initMap() {
+    var lat = clampLat(toNum(document.getElementById("Latitude").value));
+    var lng = clampLng(toNum(document.getElementById("Longitude").value));
+    var center = (lat != null && lng != null) ? { lat: lat, lng: lng } : { lat: -26.204103, lng: 28.047305 };
+    map = new google.maps.Map(document.getElementById("map"), { center: center, zoom: (lat!=null?15:10) });
+    if (lat != null && lng != null) setMarker(lat, lng, false);
+    map.addListener("click", function (e) {
+      var lt = clampLat(e.latLng.lat());
+      var lg = clampLng(e.latLng.lng());
+      setMarker(lt, lg, true);
+      updateLatLngInputs(lt, lg, true);
+    });
+  }
+
+  function initAutocomplete() {
+    var input = document.getElementById("placeSearch");
+    autocomplete = new google.maps.places.Autocomplete(input, { fields: ["place_id", "geometry", "name", "address_components"] });
+    autocomplete.addListener("place_changed", function () {
+      var place = autocomplete.getPlace();
+      if (!place || !place.geometry || !place.geometry.location) return;
+      var lat = clampLat(place.geometry.location.lat());
+      var lng = clampLng(place.geometry.location.lng());
+      setMarker(lat, lng, true);
+      map.setZoom(15);
+      updateLatLngInputs(lat, lng, false);
+      document.getElementById("PlaceId").value = place.place_id || "";
+      if (!document.getElementById("Name").value) document.getElementById("Name").value = place.name || "";
+      var city = getComp(place.address_components||[], ["locality","sublocality","postal_town","administrative_area_level_2"]);
+      var province = getComp(place.address_components||[], ["administrative_area_level_1"]);
+      document.getElementById("City").value = city || document.getElementById("City").value;
+      document.getElementById("Province").value = province || document.getElementById("Province").value;
+    });
+  }
+
+  document.getElementById("Latitude").addEventListener("change", function () {
+    var lt = clampLat(toNum(this.value));
+    var lg = clampLng(toNum(document.getElementById("Longitude").value));
+    if (lt == null || lg == null) return;
+    setMarker(lt, lg, true);
+    updateLatLngInputs(lt, lg, true);
+  });
+
+  document.getElementById("Longitude").addEventListener("change", function () {
+    var lt = clampLat(toNum(document.getElementById("Latitude").value));
+    var lg = clampLng(toNum(this.value));
+    if (lt == null || lg == null) return;
+    setMarker(lt, lg, true);
+    updateLatLngInputs(lt, lg, true);
+  });
+
+  document.getElementById("rankForm").addEventListener("submit", function () {
+    var lt = clampLat(toNum(document.getElementById("Latitude").value));
+    var lg = clampLng(toNum(document.getElementById("Longitude").value));
+    document.getElementById("Latitude").value = lt != null ? fmt6(lt) : "";
+    document.getElementById("Longitude").value = lg != null ? fmt6(lg) : "";
+  });
+
+  if (window.google && google.maps) {
+    initMap();
+    initAutocomplete();
+  }
+})();
+</script>

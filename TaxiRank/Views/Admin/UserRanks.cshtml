@@ -1,0 +1,29 @@
+﻿@model List<int>
+@{
+    var user = ViewBag.User as TaxiRank.Models.User;
+    var ranks = ViewBag.Ranks as List<TaxiRank.Models.ViewModels.IdName>;
+    ViewBag.Title = "User Ranks";
+}
+<div class="container py-3">
+    <h3>User Ranks — @user.DisplayName</h3>
+    @using (Html.BeginForm("UserRanks", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="userId" value="@user.UserId" />
+        <div class="row row-cols-1 row-cols-md-2 g-2">
+            @foreach (var r in ranks)
+            {
+                <div class="col">
+                    <div class="form-check border rounded p-2">
+                        <input class="form-check-input" type="checkbox" name="rankIds" value="@r.Id" @(Model.Contains(r.Id) ? "checked" : "") />
+                        <label class="form-check-label">@r.Name</label>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary">Save</button>
+            <a class="btn btn-outline-secondary" href="@Url.Action("UsersList")">Back</a>
+        </div>
+    }
+</div>

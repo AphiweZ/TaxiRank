@@ -1,0 +1,75 @@
+﻿@model IEnumerable<TaxiRank.Models.User>
+@{
+    ViewBag.Title = "Manage Users";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">Manage Users</h2>
+            <p class="text-muted">View, filter, and manage all registered users in the system.</p>
+        </div>
+        <a href="@Url.Action("UserCreate")" class="btn btn-primary shadow-sm">+ Add New User</a>
+    </div>
+
+    <form class="row g-3 mb-4" method="get">
+        <div class="col-md-3">
+            <input name="role" class="form-control" placeholder="Filter by Role (Admin, Driver...)" value="@Request["role"]" />
+        </div>
+        <div class="col-md-5">
+            <input name="search" class="form-control" placeholder="Search by name, username, or email" value="@Request["search"]" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100">Apply Filters</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle shadow-sm">
+            <thead class="table-light">
+                <tr class="text-uppercase text-muted small">
+                    <th>Display Name</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>@u.DisplayName</td>
+                        <td>@u.Username</td>
+                        <td><span class="badge bg-dark">@u.Role</span></td>
+                        <td>
+                            @if (u.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Disabled</span>
+                            }
+                        </td>
+                        <td>@u.Phone</td>
+                        <td>@(u.Email ?? "-")</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a class="btn btn-outline-primary" href="@Url.Action("UserEdit", new { id = u.UserId })">Edit</a>
+                                <a class="btn btn-outline-info" href="@Url.Action("UserRanks", new { id = u.UserId })">Ranks</a>
+                                @using (Html.BeginForm("UserToggleActive", "Admin", new { id = u.UserId }, FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-warning">Switch</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

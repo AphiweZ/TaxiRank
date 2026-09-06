@@ -1,0 +1,28 @@
+﻿@model TaxiRank.Models.ViewModels.SettlementGenerateVM
+@{
+    ViewBag.Title = "Generate Settlement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <h3>Generate Settlement</h3>
+    @using (Html.BeginForm("SettlementGenerate", "Owner", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-6">
+    @Html.Label("Owner")
+    
+    <p class="form-control-plaintext">
+        <b>@Model.OwnerName</b>
+    </p>
+
+    @Html.HiddenFor(m => m.OwnerId) 
+</div>
+            <div class="col-md-3">@Html.LabelFor(m => m.PeriodDay, "Period Day")@Html.TextBoxFor(m => m.PeriodDay, new { @class = "form-control", type = "date" })</div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Generate</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("Settlements")">Back</a>
+            </div>
+        </div>
+    }
+</div>

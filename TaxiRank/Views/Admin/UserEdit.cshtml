@@ -1,0 +1,48 @@
+﻿@model TaxiRank.Models.User
+@{
+    ViewBag.Title = "Edit User";
+}
+<div class="container py-3">
+    <h3>Edit User</h3>
+    @using (Html.BeginForm("UserEdit", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="UserId" value="@Model.UserId" />
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Display Name</label>
+          
+                <input name="DisplayName" class="form-control" value="@Model.DisplayName" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Phone</label>
+              
+                <input name="Phone" class="form-control" value="@Model.Phone" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                
+                <input name="Email" type="email" class="form-control" value="@Model.Email" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Role</label>
+                <select name="Role" class="form-select">
+                    @foreach (var r in new[] { "Admin", "RankManager", "Owner", "Driver", "Customer" })
+                    {
+                        <option @(Model.Role == r ? "selected" : "")>@r</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
+                    <label class="form-check-label">Active</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary">Save</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("UsersList")">Back</a>
+            </div>
+        </div>
+    }
+</div>

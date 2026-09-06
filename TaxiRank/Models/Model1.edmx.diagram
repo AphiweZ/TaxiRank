@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="8603d5ad7796497db974b5c71c3485fd" Name="Diagram1">
+        <EntityTypeShape EntityType="TaxiRankDb3Model.AlertRule" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Alert" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Approval" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Attachment" Width="1.5" PointX="11" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.AuditLog" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Booking" Width="1.5" PointX="10.25" PointY="23.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.BookingSeat" Width="1.5" PointX="12.5" PointY="17.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.CashupBag" Width="1.5" PointX="3" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.CharterPassenger" Width="1.5" PointX="5.25" PointY="29" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.CharterPayment" Width="1.5" PointX="5.25" PointY="32.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Charter" Width="1.5" PointX="3" PointY="28.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.CharterVehicle" Width="1.5" PointX="8.25" PointY="30.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Departure" Width="1.5" PointX="8" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.DriverAssignment" Width="1.5" PointX="6" PointY="35.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Expens" Width="1.5" PointX="13.25" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.FareRule" Width="1.5" PointX="8" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Float" Width="1.5" PointX="11.25" PointY="29.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Incident" Width="1.5" PointX="10.25" PointY="39.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.MapsCache" Width="1.5" PointX="2.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.OwnerConfig" Width="1.5" PointX="3" PointY="46.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Passenger" Width="1.5" PointX="8" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Payment" Width="1.5" PointX="12.5" PointY="38.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Rank" Width="1.5" PointX="3.5" PointY="19.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.ReportingArchive" Width="1.5" PointX="4.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Route" Width="1.5" PointX="5.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.RouteWaypoint" Width="1.5" PointX="11" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.SeatInventory" Width="1.5" PointX="15.5" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Settlement" Width="1.5" PointX="3" PointY="49.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Telemetry" Width="1.5" PointX="10.25" PointY="42.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.UserRank" Width="1.5" PointX="3" PointY="24.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.User" Width="1.5" PointX="0.75" PointY="29.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.VehicleDocument" Width="1.5" PointX="11.25" PointY="34.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.Vehicle" Width="1.5" PointX="9" PointY="33.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaxiRankDb3Model.WaypointCheck" Width="1.5" PointX="13.25" PointY="21" IsExpanded="true" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Expenses_Attachment" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Bookings_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Bookings_Passenger" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_BookingSeats_Booking" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Payments_Booking" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_SeatInventory_Booking" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CashupBags_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CashupBags_User" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CharterPassengers_Charter" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CharterPayments_Charter" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Charters_ApprovedBy" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Charters_Customer" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CharterVehicles_Charter" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CharterVehicles_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_CharterVehicles_Vehicle" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Departures_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Departures_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Departures_Vehicle" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Expenses_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Floats_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Incidents_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_SeatInventory_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Telemetry_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_WaypointChecks_Departure" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_DriverAssignments_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_DriverAssignments_Vehicle" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_FareRules_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Floats_User" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_OwnerConfigs_Owner" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Routes_FromRank" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_UserRanks_Rank" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Vehicles_HomeRank" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_RouteWaypoints_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_WaypointChecks_Waypoint" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Settlements_Owner" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_UserRanks_User" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_Vehicles_Owner" ManuallyRouted="false" />
+        <AssociationConnector Association="TaxiRankDb3Model.FK_VehicleDocuments_Vehicle" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

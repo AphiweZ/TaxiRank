@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Driver Assignments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var rows = (IEnumerable<TaxiRank.Models.DriverAssignment>)ViewBag.Rows;
+}
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Driver Assignments</h3>
+        <a class="btn btn-outline-primary" href="@Url.Action("AssignmentCreate")">New Assignment</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light">
+                <tr><th>Vehicle</th><th>Driver</th><th>Start</th><th>End</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var a in rows)
+                {
+                    <tr>
+                        <td>@a.Vehicle.RegNo</td>
+                        <td>@a.User.DisplayName</td>
+                        <td>@a.StartDate.ToString("yyyy-MM-dd")</td>
+                        <td>@(a.EndDate.HasValue ? a.EndDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                        <td class="text-end">
+                            @using (Html.BeginForm("AssignmentEnd", "Owner", FormMethod.Post))
+                            {@Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@a.AssignmentId" />
+                            <input class="form-control form-control-sm d-inline-block" style="width:150px" type="date" name="endDate" required />
+                            <button class="btn btn-sm btn-outline-dark ms-1">End</button>
+                        }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

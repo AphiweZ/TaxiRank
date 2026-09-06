@@ -1,0 +1,47 @@
+﻿@model TaxiRank.Models.ViewModels.TicketVM
+@{
+    ViewBag.Title = "Your Ticket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-3">
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Ticket — @Model.Pnr</strong>
+                    <img src="~/Content/images/tickets.jpg" alt="" style="height:40px" class="rounded" />
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-6"><div class="text-muted">Passenger</div><div class="h5 mb-0">@Model.Passenger</div></div>
+                        <div class="col-md-6"><div class="text-muted">Route</div><div class="h5 mb-0">@Model.Route</div></div>
+                        <div class="col-md-4"><div class="text-muted">Date</div><div class="h5 mb-0">@Model.DepartureDate.ToString("yyyy-MM-dd")</div></div>
+                        <div class="col-md-4"><div class="text-muted">Time</div><div class="h5 mb-0">@Model.Time</div></div>
+                        <div class="col-md-4"><div class="text-muted">Seats</div><div class="h5 mb-0">@Model.Seats</div></div>
+
+                        <div class="col-md-6"><div class="text-muted">Vehicle Reg. No.</div><div class="h5 mb-0">@Model.VehicleReg</div></div>
+
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div>Total</div>
+                        <div class="h5 mb-0">@Model.Total.ToString("0.00") ZAR</div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex flex-wrap gap-2">
+                    @using (Html.BeginForm("ResendTicketEmail", "Customer", new { id = Request.RequestContext.RouteData.Values["id"] }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-outline-primary">Email Me This Ticket</button>
+                    }
+                    <a class="btn btn-outline-secondary" href="@Url.Action("MyBookings")">Back to My Bookings</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="alert alert-info">
+                Show this page at boarding. Keep your PNR handy: <strong>@Model.Pnr</strong>.
+            </div>
+        </div>
+    </div>
+</div>
